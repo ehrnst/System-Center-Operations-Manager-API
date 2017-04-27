@@ -1,7 +1,6 @@
 # System Center Operations Manager Web API
 
 Bringing SCOM in to the 21. century with a basic Web API
-I have released my source code and included a 'web deploy' package which quickly letyou deploy and use the API
 
 
 ### API endpoints included
