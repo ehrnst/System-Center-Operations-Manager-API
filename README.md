@@ -1,6 +1,6 @@
 # System Center Operations Manager Web API
 
-Bringing SCOM in to the 21. century with a basic Web API
+Bringing SCOM in to the 21. century with a basic Web API (v0.1 Community Alpha)
 
 
 ### API endpoints included
