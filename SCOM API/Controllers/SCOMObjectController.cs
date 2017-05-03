@@ -22,8 +22,13 @@ namespace SCOM_API.Controllers
         ManagementGroup mg = null;
         public SCOMObjectController()
         {
+            System.Security.Principal.WindowsImpersonationContext impersonationContext;
+            impersonationContext =
+                ((System.Security.Principal.WindowsIdentity)User.Identity).Impersonate();
             var SCOMSERVER = ConfigurationManager.AppSettings["ScomSdkServer"];
-            mg = ManagementGroup.Connect(SCOMSERVER);
+            ManagementGroupConnectionSettings mgSettings = new ManagementGroupConnectionSettings(SCOMSERVER);
+
+            mg = ManagementGroup.Connect(mgSettings);
         }
 
         /// <summary>
@@ -34,12 +39,12 @@ namespace SCOM_API.Controllers
         [Route("API/MonitoringObject/{id}")]
         public IHttpActionResult GetMonitoringObject(Guid id)
         {
-            ///get the monitoring object by Guid
+            //get the monitoring object by Guid
             var monObject = mg.EntityObjects.GetObject<MonitoringObject>(id, ObjectQueryOptions.Default);
 
             List<SCOMMonitoringObjectModel> MonitoringObject = new List<SCOMMonitoringObjectModel>();
 
-            ///Add properties
+            //Add properties
             SCOMMonitoringObjectModel mObject = new SCOMMonitoringObjectModel();
             mObject.displayName = monObject.DisplayName;
             mObject.healthState = monObject.HealthState.ToString();
@@ -54,4 +59,4 @@ namespace SCOM_API.Controllers
         }
 
     }
-}///END
+}//END

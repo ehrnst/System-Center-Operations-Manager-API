@@ -30,7 +30,6 @@ namespace SCOM_API.Controllers
 
             mg = ManagementGroup.Connect(mgSettings);
 
-           
         }
 
         /// <summary>
