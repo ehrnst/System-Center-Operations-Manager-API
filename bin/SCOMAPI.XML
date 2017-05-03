@@ -64,5 +64,11 @@
             Gets all agents from management group. Requires SCOM Administrator previlgies
             </summary>
         </member>
+        <member name="M:SCOM_API.Controllers.SCOMAgentController.GetAllScomAgents(System.Guid)">
+            <summary>
+            Gets agent managed computer. 
+            Requires SCOM Administrator previlgies
+            </summary>
+        </member>
     </members>
 </doc>
