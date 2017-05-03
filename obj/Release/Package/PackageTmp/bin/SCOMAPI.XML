@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>SCOM API</name>
+    </assembly>
+    <members>
+        <member name="M:SCOM_API.Controllers.SCOMObjectController.GetMonitoringObject(System.Guid)">
+            <summary>
+            Gets information about a monitoring object.
+            </summary>
+            <param name="id">Monitoring object GUID</param>
+        </member>
+        <member name="M:SCOM_API.Controllers.SCOMMaintenanceController.EnableComputerMaintenance(SCOM_API.Models.SCOMComputerMaintenanceModel)">
+            <summary>
+            Puts the specified computers and all hosted objects in to maintenance.
+            </summary>
+            <param name="Data">Json string with computername minutes and comment</param>
+            <example>
+            {
+                "DisplayName": "webserver.fqdn",
+                "Minutes": 10,
+                "comment": "doing maintenance"
+            }
+            </example>
+        </member>
+        <member name="M:SCOM_API.Controllers.SCOMComputerController.GetComputerPartialMonitoringObject">
+             <summary>
+            Gets all windows computers.
+             </summary>
+        </member>
+        <member name="M:SCOM_API.Controllers.SCOMComputerController.GetComputerPartialMonitoringObjectByName(System.String)">
+            <summary>
+            Get computer object from computername.
+            </summary>
+        </member>
+        <member name="M:SCOM_API.Controllers.SCOMAlertController.GetAlert">
+            <summary>
+            Get all active alerts
+            </summary>
+        </member>
+        <member name="M:SCOM_API.Controllers.SCOMAlertController.GetAlertById(System.String)">
+            <summary>
+            Gets single alert based on ID
+            </summary>
+            <param name="Id">Guid of the alert</param>
+        </member>
+        <member name="M:SCOM_API.Controllers.SCOMAlertController.GetAlertByComputerName(System.String,System.Nullable{System.Boolean})">
+            <summary>
+            Get all alerts related to the computername.
+            </summary>
+            <param name="ComputerName">FQDN of the windows computer</param>
+            <param name="IncClosed">if true closed alert is also returned. Default is 'false'</param>
+        </member>
+        <member name="M:SCOM_API.Controllers.SCOMAlertController.UpdateAlertById(System.Guid,System.Byte,System.String)">
+            <summary>
+            Updates the specified alert.
+            </summary>
+            <param name="ResolutionState">If specified as 255 (closed) and alert is raised by monitor. The corresponding monitor will be reset</param>
+            <param name="TicketId">set if you want to update alert with a ticket id</param>
+            <param name="Id">the alert GUID</param>
+        </member>
+        <member name="M:SCOM_API.Controllers.SCOMAgentController.GetAllScomAgents">
+            <summary>
+            Gets all agents from management group. Requires SCOM Administrator previlgies
+            </summary>
+        </member>
+        <member name="M:SCOM_API.Controllers.SCOMAgentController.GetAllScomAgents(System.Guid)">
+            <summary>
+            Gets agent managed computer. 
+            Requires SCOM Administrator previlgies
+            </summary>
+        </member>
+    </members>
+</doc>
