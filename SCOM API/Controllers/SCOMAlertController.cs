@@ -148,7 +148,7 @@ namespace SCOM_API.Controllers
                     if (string.IsNullOrWhiteSpace(TicketId))
                     {
                         a.ResolutionState = ResolutionState;
-                        string comment = "Changed resolution state";
+                        string comment = "Changed resolution state (API)";
                         a.Update(comment);
 
                     }
@@ -157,7 +157,7 @@ namespace SCOM_API.Controllers
                     {
                         a.ResolutionState = ResolutionState;
                         a.TicketId = TicketId;
-                        string comment = "Changed resolution state and ticket id";
+                        string comment = "Changed resolution state and ticket id (API)";
                         a.Update(comment);
                     }
                     
@@ -170,4 +170,4 @@ namespace SCOM_API.Controllers
 
     }
 }
-///END
+//END
