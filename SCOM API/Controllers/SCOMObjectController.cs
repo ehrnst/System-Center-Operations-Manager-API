@@ -22,6 +22,9 @@ namespace SCOM_API.Controllers
         ManagementGroup mg = null;
         public SCOMObjectController()
         {
+            System.Security.Principal.WindowsImpersonationContext impersonationContext;
+            impersonationContext =
+                ((System.Security.Principal.WindowsIdentity)User.Identity).Impersonate();
             var SCOMSERVER = ConfigurationManager.AppSettings["ScomSdkServer"];
             ManagementGroupConnectionSettings mgSettings = new ManagementGroupConnectionSettings(SCOMSERVER);
 

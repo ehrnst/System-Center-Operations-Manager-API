@@ -32,9 +32,10 @@ namespace SCOM_API.Controllers
         /// Gets all agents from management group. Requires SCOM Administrator previlgies
         /// </summary>
         [Route("API/Agents")]
-        public IList<AgentManagedComputer> GetAllScomAgents()
+        public IList<PartialAgentManagedComputer> GetScomAgents()
         {
-            var Agents = mg.Administration.GetAllAgentManagedComputers();
+            var Agents = mg.Administration.GetPartialAgentManagedComputers();
+
             return Agents;
         }
 
@@ -44,9 +45,9 @@ namespace SCOM_API.Controllers
         /// Requires SCOM Administrator previlgies
         /// </summary>
         [Route("API/Agents")]
-        public AgentManagedComputer GetAllScomAgents(Guid Id)
+        public PartialAgentManagedComputer GetScomAgents(Guid Id)
         {
-            var Agent = mg.Administration.GetAgentManagedComputer(Id);
+            var Agent = mg.Administration.GetPartialAgentManagedComputer(Id);
             return Agent;
         }
     }
