@@ -19,8 +19,10 @@ namespace SCOM_API.Controllers
         ManagementGroup mg = null;
         public SCOMAgentController()
         {
+            System.Security.Principal.WindowsImpersonationContext impersonationContext;
+            impersonationContext =
+                ((System.Security.Principal.WindowsIdentity)User.Identity).Impersonate();
             var SCOMSERVER = ConfigurationManager.AppSettings["ScomSdkServer"];
-
             ManagementGroupConnectionSettings mgSettings = new ManagementGroupConnectionSettings(SCOMSERVER);
 
             mg = ManagementGroup.Connect(mgSettings);
@@ -35,5 +37,17 @@ namespace SCOM_API.Controllers
             var Agents = mg.Administration.GetAllAgentManagedComputers();
             return Agents;
         }
+
+
+        /// <summary>
+        /// Gets agent managed computer. 
+        /// Requires SCOM Administrator previlgies
+        /// </summary>
+        [Route("API/Agents")]
+        public AgentManagedComputer GetAllScomAgents(Guid Id)
+        {
+            var Agent = mg.Administration.GetAgentManagedComputer(Id);
+            return Agent;
+        }
     }
-} ///END
+} //END
