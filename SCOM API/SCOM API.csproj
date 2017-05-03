@@ -278,6 +278,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <None Include="Properties\PublishProfiles\SCOMAPI.pubxml" />
     <None Include="Properties\PublishProfiles\SCOMAPIDev.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
