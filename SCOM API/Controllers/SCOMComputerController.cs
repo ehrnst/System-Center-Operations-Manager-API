@@ -34,6 +34,7 @@ namespace SCOM_API.Controllers
         /// <summary>
         ///Gets all windows computers.
         /// </summary>
+        
         [Route("API/WindowsComputers")]
         public IHttpActionResult GetComputerPartialMonitoringObject()
         {
@@ -68,6 +69,7 @@ namespace SCOM_API.Controllers
         /// <summary>
         /// Get computer object from computername.
         /// </summary>
+        /// <response code="400">ComputerName empty or computer cannot be found</response>
         [Route("API/WindowsComputers")]
         public IHttpActionResult GetComputerPartialMonitoringObjectByName(string ComputerName)
         {
@@ -89,23 +91,39 @@ namespace SCOM_API.Controllers
 
                 windowsComputerObjects.AddRange(reader);
 
-                List<SCOMComputerModel> SCOMComputers = new List<SCOMComputerModel>();
-
-                foreach (PartialMonitoringObject windowsComputerObject in windowsComputerObjects)
+                //Check if computers are in list
+                if (windowsComputerObjects.Count > 0)
                 {
-                    SCOMComputerModel SCOMComputer = new SCOMComputerModel();
-                    SCOMComputer.ID = windowsComputerObject.Id;
-                    SCOMComputer.DisplayName = windowsComputerObject.DisplayName;
-                    SCOMComputer.HealthState = windowsComputerObject.HealthState.ToString();
-                    SCOMComputer.InMaintenance = windowsComputerObject.InMaintenanceMode;
-                    
-                    
 
-                    SCOMComputers.Add(SCOMComputer);
+
+                    List<SCOMComputerModel> SCOMComputers = new List<SCOMComputerModel>();
+
+                    foreach (PartialMonitoringObject windowsComputerObject in windowsComputerObjects)
+                    {
+                        SCOMComputerModel SCOMComputer = new SCOMComputerModel();
+                        SCOMComputer.ID = windowsComputerObject.Id;
+                        SCOMComputer.DisplayName = windowsComputerObject.DisplayName;
+                        SCOMComputer.HealthState = windowsComputerObject.HealthState.ToString();
+                        SCOMComputer.InMaintenance = windowsComputerObject.InMaintenanceMode;
+
+
+
+                        SCOMComputers.Add(SCOMComputer);
+                    }
+
+                    //Successful return
+                    return Json(SCOMComputers);
                 }
 
-                return Json(SCOMComputers);
+                //If computer cannot be found
+                else
+                {
+                    HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                    message.Content = new StringContent("Cannot find Computer. Please see input");
+                    throw new HttpResponseException(message);
+                }
+            }
+
             }
         }
-    }
-}///END
+    }//END
