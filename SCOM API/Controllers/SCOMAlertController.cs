@@ -49,6 +49,7 @@ namespace SCOM_API.Controllers
         /// Gets single alert based on ID
         /// </summary>
         /// <param name="Id">Guid of the alert</param>
+        /// <response code="400">Bad request. Check Id parameter</response>
         [HttpGet]
         [Route("API/Alerts/")]
         public IList<MonitoringAlert> GetAlertById(string Id)
@@ -123,6 +124,7 @@ namespace SCOM_API.Controllers
                 throw new HttpResponseException(Request
                 .CreateResponse(HttpStatusCode.BadRequest));
             }
+
 
             //alert criteria
             var Criteria = string.Format("Id = '{0}'", Id);
