@@ -35,6 +35,7 @@ namespace SCOM_API.Controllers
         /// Gets information about a monitoring object.
         /// </summary>
         /// <param name="id">Monitoring object GUID</param>
+        /// <response code="400">Cannot be found</response>
         [HttpGet]
         [Route("API/MonitoringObject/{id}")]
         public IHttpActionResult GetMonitoringObject(Guid id)
@@ -44,18 +45,30 @@ namespace SCOM_API.Controllers
 
             List<SCOMMonitoringObjectModel> MonitoringObject = new List<SCOMMonitoringObjectModel>();
 
-            //Add properties
-            SCOMMonitoringObjectModel mObject = new SCOMMonitoringObjectModel();
-            mObject.displayName = monObject.DisplayName;
-            mObject.healthState = monObject.HealthState.ToString();
-            mObject.stateLastModified = monObject.StateLastModified.ToString();
-            mObject.inMaintenance = monObject.InMaintenanceMode;
-            mObject.path = monObject.Path;
+            if (MonitoringObject.Count > 0)
+            {
 
-            MonitoringObject.Add(mObject);
+                //Add properties
+                SCOMMonitoringObjectModel mObject = new SCOMMonitoringObjectModel();
+                mObject.displayName = monObject.DisplayName;
+                mObject.healthState = monObject.HealthState.ToString();
+                mObject.stateLastModified = monObject.StateLastModified.ToString();
+                mObject.inMaintenance = monObject.InMaintenanceMode;
+                mObject.path = monObject.Path;
 
-            return Json(MonitoringObject);
+                MonitoringObject.Add(mObject);
 
+                return Json(MonitoringObject);
+            }
+
+            //If no object found return error code
+            else
+            { 
+           
+                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                message.Content = new StringContent("Cannot find object");
+                throw new HttpResponseException(message);
+            }
         }
 
     }
