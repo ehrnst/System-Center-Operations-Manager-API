@@ -22,6 +22,9 @@
                 "comment": "doing maintenance"
             }
             </example>
+            <response code="201">Successfully added maintenance mode for computer</response>
+            <response code="400">Bad request. Check json input</response>
+            <response code="409">Conflict computer already in maintenance</response>
         </member>
         <member name="M:SCOM_API.Controllers.SCOMComputerController.GetComputerPartialMonitoringObject">
              <summary>
@@ -59,12 +62,12 @@
             <param name="TicketId">set if you want to update alert with a ticket id</param>
             <param name="Id">the alert GUID</param>
         </member>
-        <member name="M:SCOM_API.Controllers.SCOMAgentController.GetAllScomAgents">
+        <member name="M:SCOM_API.Controllers.SCOMAgentController.GetScomAgents">
             <summary>
             Gets all agents from management group. Requires SCOM Administrator previlgies
             </summary>
         </member>
-        <member name="M:SCOM_API.Controllers.SCOMAgentController.GetAllScomAgents(System.Guid)">
+        <member name="M:SCOM_API.Controllers.SCOMAgentController.GetScomAgents(System.Guid)">
             <summary>
             Gets agent managed computer. 
             Requires SCOM Administrator previlgies
