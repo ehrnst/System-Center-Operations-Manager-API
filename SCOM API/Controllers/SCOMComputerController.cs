@@ -125,5 +125,101 @@ namespace SCOM_API.Controllers
             }
 
             }
+
+        /// <summary>
+        ///Gets all Linux Computers.
+        /// </summary>
+
+        [Route("API/LinuxComputers")]
+        public IHttpActionResult GetLinuxComputers()
+        {
+            ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria("Name = 'Microsoft.Linux.Computer'");
+            IList<ManagementPackClass> monitoringClasses = mg.EntityTypes.GetClasses(classCriteria);
+
+
+            List<PartialMonitoringObject> linuxComputerObjects = new List<PartialMonitoringObject>();
+
+            IObjectReader<PartialMonitoringObject> reader = mg.EntityObjects.GetObjectReader<PartialMonitoringObject>(monitoringClasses[0], ObjectQueryOptions.Default);
+
+            linuxComputerObjects.AddRange(reader);
+
+            List<SCOMComputerModel> SCOMLinuxComputers = new List<SCOMComputerModel>();
+
+            foreach (PartialMonitoringObject linuxComputerObject in linuxComputerObjects)
+            {
+                SCOMComputerModel SCOMComputer = new SCOMComputerModel();
+                SCOMComputer.DisplayName = linuxComputerObject.DisplayName;
+                SCOMComputer.HealthState = linuxComputerObject.HealthState.ToString();
+                SCOMComputer.InMaintenance = linuxComputerObject.InMaintenanceMode;
+
+                SCOMComputer.ID = linuxComputerObject.Id;
+
+                SCOMLinuxComputers.Add(SCOMComputer);
+            }
+
+            return Json(SCOMLinuxComputers);
+
         }
+
+        /// <summary>
+        /// Get computer object from computername.
+        /// </summary>
+        /// <response code="400">ComputerName empty or computer cannot be found</response>
+        [Route("API/LinuxComputers/{ComputerName}")]
+        public IHttpActionResult GetLinuxComputersByName(string ComputerName)
+        {
+            ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria("Name = 'Microsoft.Linux.Computer'");
+            IList<ManagementPackClass> monitoringClasses = mg.EntityTypes.GetClasses(classCriteria);
+            if (string.IsNullOrEmpty(ComputerName))
+            {
+                throw new HttpResponseException(Request
+                .CreateResponse(HttpStatusCode.BadRequest));
+            }
+            else
+            {
+                MonitoringObjectCriteria criteria = new MonitoringObjectCriteria(string.Format("Name = '{0}'", ComputerName), monitoringClasses[0]);
+
+
+                List<PartialMonitoringObject> linuxComputerObjects = new List<PartialMonitoringObject>();
+
+                IObjectReader<PartialMonitoringObject> reader = mg.EntityObjects.GetObjectReader<PartialMonitoringObject>(criteria, ObjectQueryOptions.Default);
+
+                linuxComputerObjects.AddRange(reader);
+
+                //Check if computers are in list
+                if (linuxComputerObjects.Count > 0)
+                {
+
+
+                    List<SCOMComputerModel> SCOMLinuxComputers = new List<SCOMComputerModel>();
+
+                    foreach (PartialMonitoringObject linuxComputerObject in linuxComputerObjects)
+                    {
+                        SCOMComputerModel SCOMComputer = new SCOMComputerModel();
+                        SCOMComputer.ID = linuxComputerObject.Id;
+                        SCOMComputer.DisplayName = linuxComputerObject.DisplayName;
+                        SCOMComputer.HealthState = linuxComputerObject.HealthState.ToString();
+                        SCOMComputer.InMaintenance = linuxComputerObject.InMaintenanceMode;
+
+
+
+                        SCOMLinuxComputers.Add(SCOMComputer);
+                    }
+
+                    //Successful return
+                    return Json(SCOMLinuxComputers);
+                }
+
+                //If computer cannot be found
+                else
+                {
+                    HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                    message.Content = new StringContent("Cannot find Computer. Please see input");
+                    throw new HttpResponseException(message);
+                }
+            }
+
+        }
+
+    }
     }//END
