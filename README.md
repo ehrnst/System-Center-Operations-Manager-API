@@ -40,5 +40,5 @@ The api is swagger enabled, but not all functions are documented. (Multiple get 
 
 ### Limitations
 
-* SCOM RBAC is NOT used. This means that authentication against the SCOM SDK will be from the application pool/server
+* User impersonation is enabled in code, but only confirmed to work when API is installed on a management server
 * Microsoft SCOM .dll must be manually copied from your management server to the bin folder.

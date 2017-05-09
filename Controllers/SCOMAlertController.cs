@@ -22,8 +22,14 @@ namespace SCOM_API.Controllers
 
         public SCOMAlertController()
         {
+            System.Security.Principal.WindowsImpersonationContext impersonationContext;
+            impersonationContext =
+                ((System.Security.Principal.WindowsIdentity)User.Identity).Impersonate();
             var SCOMSERVER = ConfigurationManager.AppSettings["ScomSdkServer"];
-            mg = ManagementGroup.Connect(SCOMSERVER);
+            ManagementGroupConnectionSettings mgSettings = new ManagementGroupConnectionSettings(SCOMSERVER);
+
+            mg = ManagementGroup.Connect(mgSettings);
+
         }
 
         /// <summary>
@@ -142,7 +148,7 @@ namespace SCOM_API.Controllers
                     if (string.IsNullOrWhiteSpace(TicketId))
                     {
                         a.ResolutionState = ResolutionState;
-                        string comment = "Changed resolution state";
+                        string comment = "Changed resolution state (API)";
                         a.Update(comment);
 
                     }
@@ -151,7 +157,7 @@ namespace SCOM_API.Controllers
                     {
                         a.ResolutionState = ResolutionState;
                         a.TicketId = TicketId;
-                        string comment = "Changed resolution state and ticket id";
+                        string comment = "Changed resolution state and ticket id (API)";
                         a.Update(comment);
                     }
                     
@@ -164,4 +170,4 @@ namespace SCOM_API.Controllers
 
     }
 }
-///END
+//END
