@@ -17,6 +17,7 @@ using System.Configuration;
 
 namespace SCOM_API.Controllers
 {
+    [RoutePrefix("API/Computer")]
     public class SCOMComputerController : ApiController
     {
         ManagementGroup mg = null;
@@ -35,7 +36,8 @@ namespace SCOM_API.Controllers
         ///Gets all windows computers.
         /// </summary>
         
-        [Route("API/WindowsComputers")]
+        [Route("Windows")]
+        [HttpGet]
         public IHttpActionResult GetComputerPartialMonitoringObject()
         {
             ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria("Name = 'Microsoft.Windows.Computer'");
@@ -69,8 +71,10 @@ namespace SCOM_API.Controllers
         /// <summary>
         /// Get computer object from computername.
         /// </summary>
-        /// <response code="400">ComputerName empty or computer cannot be found</response>
-        [Route("API/WindowsComputers")]
+        /// <response code="404">ComputerName empty or computer cannot be found</response>
+        /// <response code="400">Bad request</response>
+        [Route("Windows/{ComputerName}")]
+        [HttpGet]
         public IHttpActionResult GetComputerPartialMonitoringObjectByName(string ComputerName)
         {
             ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria("Name = 'Microsoft.Windows.Computer'");
@@ -118,7 +122,7 @@ namespace SCOM_API.Controllers
                 //If computer cannot be found
                 else
                 {
-                    HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                    HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.NotFound);
                     message.Content = new StringContent("Cannot find Computer. Please see input");
                     throw new HttpResponseException(message);
                 }
@@ -130,7 +134,8 @@ namespace SCOM_API.Controllers
         ///Gets all Linux Computers.
         /// </summary>
 
-        [Route("API/LinuxComputers")]
+        [Route("Linux")]
+        [HttpGet]
         public IHttpActionResult GetLinuxComputers()
         {
             ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria("Name = 'Microsoft.Linux.Computer'");
@@ -164,8 +169,10 @@ namespace SCOM_API.Controllers
         /// <summary>
         /// Get computer object from computername.
         /// </summary>
-        /// <response code="400">ComputerName empty or computer cannot be found</response>
-        [Route("API/LinuxComputers/{ComputerName}")]
+        /// <response code="404">ComputerName empty or computer cannot be found</response>
+        /// <response code="400">Bad request</response>
+        [Route("Linux/{ComputerName}")]
+        [HttpGet]
         public IHttpActionResult GetLinuxComputersByName(string ComputerName)
         {
             ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria("Name = 'Microsoft.Linux.Computer'");
@@ -213,7 +220,7 @@ namespace SCOM_API.Controllers
                 //If computer cannot be found
                 else
                 {
-                    HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                    HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.NotFound);
                     message.Content = new StringContent("Cannot find Computer. Please see input");
                     throw new HttpResponseException(message);
                 }

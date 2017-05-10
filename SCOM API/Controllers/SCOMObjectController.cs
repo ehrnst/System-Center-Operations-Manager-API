@@ -34,18 +34,26 @@ namespace SCOM_API.Controllers
         /// <summary>
         /// Gets information about a monitoring object.
         /// </summary>
-        /// <param name="id">Monitoring object GUID</param>
-        /// <response code="400">Cannot be found</response>
+        /// <param name="Id">Monitoring object GUID</param>
+        /// <response code="400">Bad request check Id</response>
+        /// <response code="404">Object not found</response>
         [HttpGet]
         [Route("API/MonitoringObject/{id}")]
-        public IHttpActionResult GetMonitoringObject(Guid id)
+        public IHttpActionResult GetMonitoringObject(Guid Id)
         {
+            //Check if guid is not empty
+            if (Id == Guid.Empty)
+            {
+                throw new HttpResponseException(Request
+                .CreateResponse(HttpStatusCode.BadRequest));
+            }
+
             //get the monitoring object by Guid
-            var monObject = mg.EntityObjects.GetObject<MonitoringObject>(id, ObjectQueryOptions.Default);
+            var monObject = mg.EntityObjects.GetObject<MonitoringObject>(Id, ObjectQueryOptions.Default);
 
             List<SCOMMonitoringObjectModel> MonitoringObject = new List<SCOMMonitoringObjectModel>();
 
-            if (MonitoringObject.Count > 0)
+            if (monObject !=null)
             {
 
                 //Add properties
@@ -65,7 +73,7 @@ namespace SCOM_API.Controllers
             else
             { 
            
-                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.NotFound);
                 message.Content = new StringContent("Cannot find object");
                 throw new HttpResponseException(message);
             }
