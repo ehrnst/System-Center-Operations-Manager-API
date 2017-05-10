@@ -271,6 +271,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\MaintenanceScheduleModel.cs" />
+    <Compile Include="Models\SCOMObjectMaintenanceModel.cs" />
     <Compile Include="Models\SCOMComputerMaintenanceModel.cs" />
     <Compile Include="Models\SCOMMonitoringObjectModel.cs" />
     <Compile Include="Models\SCOMComputerModel.cs" />
