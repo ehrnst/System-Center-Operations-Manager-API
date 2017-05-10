@@ -16,6 +16,7 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace SCOM_API.Controllers
 {
+    [RoutePrefix("API")]
     public class SCOMAlertController : ApiController
     {
         ManagementGroup mg = null;
@@ -33,11 +34,11 @@ namespace SCOM_API.Controllers
         }
 
         /// <summary>
-        /// Get all active alerts
+        /// Get all active/new alerts
         /// </summary>
         [HttpGet]
-        [Route("API/Alerts/")]
-        public IList<MonitoringAlert> GetAlert()
+        [Route("Alerts")]
+        public IList<MonitoringAlert> GetAlerts()
         {
             MonitoringAlertCriteria alertCriteria = new MonitoringAlertCriteria("ResolutionState = '0'");
 
@@ -49,11 +50,13 @@ namespace SCOM_API.Controllers
         /// Gets single alert based on ID
         /// </summary>
         /// <param name="Id">Guid of the alert</param>
+        /// <response code="400">Bad request. Check Id parameter</response>
+        /// <response code="404">Not found</response>
         [HttpGet]
-        [Route("API/Alerts/")]
-        public IList<MonitoringAlert> GetAlertById(string Id)
+        [Route("Alerts/{Id:Guid}")]
+        public IList<MonitoringAlert> GetAlertById(Guid Id)
         {
-            if (string.IsNullOrEmpty(Id))
+            if (Id == Guid.Empty)
             {
                 throw new HttpResponseException(Request
                 .CreateResponse(HttpStatusCode.BadRequest));
@@ -75,7 +78,7 @@ namespace SCOM_API.Controllers
         /// <param name="ComputerName">FQDN of the windows computer</param>
         /// <param name="IncClosed">if true closed alert is also returned. Default is 'false'</param>
         [HttpGet]
-        [Route("API/Alerts/")]
+        [Route("Alerts/{ComputerName}")]
         public IList<MonitoringAlert> GetAlertByComputerName(string ComputerName, bool? IncClosed = false)
         {
             if (string.IsNullOrEmpty(ComputerName))
@@ -115,7 +118,7 @@ namespace SCOM_API.Controllers
         /// <param name="TicketId">set if you want to update alert with a ticket id</param>
         /// <param name="Id">the alert GUID</param>
         [HttpPut]
-        [Route("API/Alerts")]
+        [Route("Alerts")]
         public IList<MonitoringAlert> UpdateAlertById(Guid Id, byte ResolutionState, string TicketId = "")
         {
             if (string.IsNullOrEmpty(ResolutionState.ToString()))
@@ -123,6 +126,7 @@ namespace SCOM_API.Controllers
                 throw new HttpResponseException(Request
                 .CreateResponse(HttpStatusCode.BadRequest));
             }
+
 
             //alert criteria
             var Criteria = string.Format("Id = '{0}'", Id);
@@ -140,11 +144,11 @@ namespace SCOM_API.Controllers
                     var monObject = mg.EntityObjects.GetObject<MonitoringObject>(monitoringObjectId, ObjectQueryOptions.Default);
                     //reset the monitor to 'close' the alert
                     monObject.ResetMonitoringState(monitor);
-                    
+
                 }
                 else
                 {
-                    
+
                     if (string.IsNullOrWhiteSpace(TicketId))
                     {
                         a.ResolutionState = ResolutionState;
@@ -160,7 +164,7 @@ namespace SCOM_API.Controllers
                         string comment = "Changed resolution state and ticket id (API)";
                         a.Update(comment);
                     }
-                    
+
                 }
 
             }

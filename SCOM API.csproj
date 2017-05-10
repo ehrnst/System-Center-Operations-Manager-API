@@ -274,6 +274,7 @@
     <Compile Include="Models\SCOMComputerMaintenanceModel.cs" />
     <Compile Include="Models\SCOMMonitoringObjectModel.cs" />
     <Compile Include="Models\SCOMComputerModel.cs" />
+    <Compile Include="Models\SCOMObjectMaintenanceModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

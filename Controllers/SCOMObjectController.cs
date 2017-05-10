@@ -34,28 +34,49 @@ namespace SCOM_API.Controllers
         /// <summary>
         /// Gets information about a monitoring object.
         /// </summary>
-        /// <param name="id">Monitoring object GUID</param>
+        /// <param name="Id">Monitoring object GUID</param>
+        /// <response code="400">Bad request check Id</response>
+        /// <response code="404">Object not found</response>
         [HttpGet]
         [Route("API/MonitoringObject/{id}")]
-        public IHttpActionResult GetMonitoringObject(Guid id)
+        public IHttpActionResult GetMonitoringObject(Guid Id)
         {
+            //Check if guid is not empty
+            if (Id == Guid.Empty)
+            {
+                throw new HttpResponseException(Request
+                .CreateResponse(HttpStatusCode.BadRequest));
+            }
+
             //get the monitoring object by Guid
-            var monObject = mg.EntityObjects.GetObject<MonitoringObject>(id, ObjectQueryOptions.Default);
+            var monObject = mg.EntityObjects.GetObject<MonitoringObject>(Id, ObjectQueryOptions.Default);
 
             List<SCOMMonitoringObjectModel> MonitoringObject = new List<SCOMMonitoringObjectModel>();
 
-            //Add properties
-            SCOMMonitoringObjectModel mObject = new SCOMMonitoringObjectModel();
-            mObject.displayName = monObject.DisplayName;
-            mObject.healthState = monObject.HealthState.ToString();
-            mObject.stateLastModified = monObject.StateLastModified.ToString();
-            mObject.inMaintenance = monObject.InMaintenanceMode;
-            mObject.path = monObject.Path;
+            if (monObject != null)
+            {
 
-            MonitoringObject.Add(mObject);
+                //Add properties
+                SCOMMonitoringObjectModel mObject = new SCOMMonitoringObjectModel();
+                mObject.displayName = monObject.DisplayName;
+                mObject.healthState = monObject.HealthState.ToString();
+                mObject.stateLastModified = monObject.StateLastModified.ToString();
+                mObject.inMaintenance = monObject.InMaintenanceMode;
+                mObject.path = monObject.Path;
 
-            return Json(MonitoringObject);
+                MonitoringObject.Add(mObject);
 
+                return Json(MonitoringObject);
+            }
+
+            //If no object found return error code
+            else
+            {
+
+                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.NotFound);
+                message.Content = new StringContent("Cannot find object");
+                throw new HttpResponseException(message);
+            }
         }
 
     }

@@ -53,7 +53,7 @@ namespace SCOM_API.Controllers
             IList<ManagementPackClass> monClasses = mg.EntityTypes.GetClasses(classCriteria);
             MonitoringObjectCriteria criteria = new MonitoringObjectCriteria(string.Format("Name = '{0}'", Data.DisplayName.ToString()), monClasses[0]);
             List<MonitoringObject> monObjects = new List<MonitoringObject>();
-            
+
             List<SCOMComputerMaintenanceModel> MaintenanceComputers = new List<SCOMComputerMaintenanceModel>();
 
             ///travers trough all classes to get monitoring objects
@@ -81,33 +81,100 @@ namespace SCOM_API.Controllers
                         maintenanceComputer.EndTime = schedEndTime;
                         maintenanceComputer.Minutes = Data.Minutes;
                         maintenanceComputer.comment = comment;
-                        
+
                         //add computers to list
                         MaintenanceComputers.Add(maintenanceComputer);
 
                     }
                 }
 
-            //If computer already in maintenance. Do nothing and list info
-            else
+                //If computer already in maintenance. Throw conflict message
+                else
                 {
                     MaintenanceWindow MaintenanceWindow = monObject.GetMaintenanceWindow();
 
                     SCOMComputerMaintenanceModel maintenanceComputer = new SCOMComputerMaintenanceModel();
-                    maintenanceComputer.DisplayName = monObject.DisplayName;
-                    maintenanceComputer.EndTime = MaintenanceWindow.ScheduledEndTime;
-                    maintenanceComputer.Minutes = Data.Minutes;
-                    maintenanceComputer.comment = "Computer already in maintenance";
 
-                    MaintenanceComputers.Add(maintenanceComputer);
-
-                    throw new HttpResponseException(Request
-                .CreateResponse(HttpStatusCode.Conflict));
+                    HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.Conflict);
+                    message.Content = new StringContent("Computer already in maintenance " + MaintenanceWindow.ScheduledEndTime);
+                    throw new HttpResponseException(message);
 
                 }
 
             //Return list of computers as Json
             return Json(MaintenanceComputers);
+
+        }
+
+
+
+
+
+        /// <summary>
+        /// Puts the specified monitoring object in maintenance mode.
+        /// </summary>
+        /// <param name="Data">Json string with Id, # of minutes and a comment</param>
+        /// <example>
+        /// {
+        ///     "id": "Guid",
+        ///     "Minutes": 10,
+        ///     "comment": "doing maintenance"
+        /// }
+        /// </example>
+        /// <response code="201">Successfully added maintenance mode for the object</response>
+        /// <response code="400">Bad request. Check json input</response>
+        /// <response code="409">Conflict: object already in maintenance</response>
+        [HttpPost]
+        [Route("API/ObjectMaintenance")]
+        public IHttpActionResult EnableObjectMaintenance(SCOMObjectMaintenanceModel Data)
+        {
+            //create a Guid from the json input
+            var ObjectId = new Guid(Data.id);
+            //get the monitoring object by Guid
+            var monObject = mg.EntityObjects.GetObject<MonitoringObject>(ObjectId, ObjectQueryOptions.Default);
+
+            List<SCOMMonitoringObjectModel> MonitoringObjects = new List<SCOMMonitoringObjectModel>();
+
+            List<SCOMObjectMaintenanceModel> MaintenanceObjects = new List<SCOMObjectMaintenanceModel>();
+
+            if (!monObject.InMaintenanceMode)
+            {
+                {
+                    //set maintenance properties
+                    DateTime startTime = DateTime.UtcNow;
+                    DateTime schedEndTime = DateTime.UtcNow.AddMinutes(Data.Minutes);
+                    MaintenanceModeReason reason = MaintenanceModeReason.PlannedOther;
+                    string comment = Data.comment;
+
+                    monObject.ScheduleMaintenanceMode(startTime, schedEndTime, reason, comment);
+
+                    //Add properties to list
+                    SCOMObjectMaintenanceModel maintenanceObject = new SCOMObjectMaintenanceModel();
+                    maintenanceObject.displayName = monObject.DisplayName;
+                    maintenanceObject.id = monObject.Id.ToString();
+                    maintenanceObject.EndTime = schedEndTime;
+                    maintenanceObject.Minutes = Data.Minutes;
+                    maintenanceObject.comment = comment;
+
+                    //add computers to list
+                    MaintenanceObjects.Add(maintenanceObject);
+
+                }
+            }
+
+            //If object already in maintenance. Throw conflict message
+            else
+            {
+                MaintenanceWindow MaintenanceWindow = monObject.GetMaintenanceWindow();
+
+                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.Conflict);
+                message.Content = new StringContent("Object already in maintenance until" + MaintenanceWindow.ScheduledEndTime);
+                throw new HttpResponseException(message);
+
+            }
+
+            //Return list of computers as Json
+            return Json(MaintenanceObjects);
 
         }
 
