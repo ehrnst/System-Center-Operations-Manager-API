@@ -7,19 +7,40 @@ Bringing SCOM in to the 21. century with a basic Web API (v0.1 Community Alpha)
 
  * /API/Alerts [Get]
  	* Gets all open alerts.
-	* Additional parameters: ComputerName, Id, IncDeleted
+	* IncClosed = true will return open and closed alerts
+
+ * /API/Alerts/{Id} [Get]
+ 	* Gets single alert from Guid.
+	
+ * /API/Alerts/{ComputerName} [Get]
+ 	* Get all open alerts by computername.
+	* IncClosed = true will return open and closed alerts
+	
  * /API/Alerts [Put]
  	* Update existing alert. Change resolution state etc.
  		* Monitor generated alerts will reset if resolution state is set to 255 (closed)
 	* Required parameters, ResolutionState, Id
 	* Additional parameters, TicketId
 	
- * /API/WindowsComputers
+ * /API/Computers/Windows [Get]
  	* Gets all Windows Computer objects
- 	* Additional parameters: ComputerName
+	
+ * /API/Computers/Windows/{ComputerName} [Get]
+ 	* Gets the specific Windows computer
+
+ * /API/Computers/Linux [Get]
+ 	* Gets all Linux Computer objects
+
+ * /API/Computers/Linux/{ComputerName} [Get]
+ 	* Gets all Linux Computer objects
  
  * /API/ComputerMaintenance [Post]
  	* Puts a single windows computer object in to maintenance mode
+ 	* Required body parameters: Name, Minutes, Comment
+ 	* Limitations: Hard coded reason for maintenance, does not utilize SCOM 2016 scheduling feature
+	
+ * /API/ObjectMaintenance [Post]
+ 	* Puts a single monitoring object in to maintenance mode regardless of class
  	* Required body parameters: Name, Minutes, Comment
  	* Limitations: Hard coded reason for maintenance, does not utilize SCOM 2016 scheduling feature
 
@@ -29,7 +50,7 @@ Bringing SCOM in to the 21. century with a basic Web API (v0.1 Community Alpha)
 
 #### Swagger
 
-The api is swagger enabled, but not all functions are documented. (Multiple get parameters)
+API Documentation can be found by using url/swagger Swagger allows you to test each endpoints directly in the browser.
 
 ### Installation
 
