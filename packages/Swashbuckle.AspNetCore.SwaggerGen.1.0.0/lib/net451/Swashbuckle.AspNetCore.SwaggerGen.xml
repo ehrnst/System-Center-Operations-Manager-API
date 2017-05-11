@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Swashbuckle.AspNetCore.SwaggerGen</name>
+    </assembly>
+    <members>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.SwaggerDoc(System.String,Swashbuckle.AspNetCore.Swagger.Info)">
+            <summary>
+            Define one or more documents to be created by the Swagger generator
+            </summary>
+            <param name="name">A URI-friendly name that uniquely identifies the document</param>
+            <param name="info">Global metadata to be included in the Swagger output</param>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.DocInclusionPredicate(System.Func{System.String,Microsoft.AspNetCore.Mvc.ApiExplorer.ApiDescription,System.Boolean})">
+            <summary>
+            Provide a custom strategy for selecting actions.
+            </summary>
+            <param name="predicate">
+            A lambda that returns true/false based on document name and ApiDescription
+            </param>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.IgnoreObsoleteActions">
+            <summary>
+            Ignore any actions that are decorated with the ObsoleteAttribute
+            </summary>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.TagActionsBy(System.Func{Microsoft.AspNetCore.Mvc.ApiExplorer.ApiDescription,System.String})">
+            <summary>
+            Provide a custom strategy for assigning a default "tag" to actions
+            </summary>
+            <param name="tagSelector"></param>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.OrderActionsBy(System.Func{Microsoft.AspNetCore.Mvc.ApiExplorer.ApiDescription,System.String})">
+            <summary>
+            Provide a custom strategy for sorting actions before they're transformed into the Swagger format
+            </summary>
+            <param name="sortKeySelector"></param>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.DescribeAllParametersInCamelCase">
+            <summary>
+            Describe all parameters, regardless of how they appear in code, in camelCase
+            </summary>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.AddSecurityDefinition(System.String,Swashbuckle.AspNetCore.Swagger.SecurityScheme)">
+            <summary>
+            Add one or more "securityDefinitions", describing how your API is protected, to the generated Swagger
+            </summary>
+            <param name="name">A unique name for the scheme, as per the Swagger spec.</param>
+            <param name="securityScheme">
+            A description of the scheme - can be an instance of BasicAuthScheme, ApiKeyScheme or OAuth2Scheme
+            </param>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.MapType(System.Type,System.Func{Swashbuckle.AspNetCore.Swagger.Schema})">
+            <summary>
+            Provide a custom mapping, for a given type, to the Swagger-flavored JSONSchema
+            </summary>
+            <param name="type">System type</param>
+            <param name="schemaFactory">A factory method that generates Schema's for the provided type</param>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.MapType``1(System.Func{Swashbuckle.AspNetCore.Swagger.Schema})">
+            <summary>
+            Provide a custom mapping, for a given type, to the Swagger-flavored JSONSchema
+            </summary>
+            <typeparam name="T">System type</typeparam>
+            <param name="schemaFactory">A factory method that generates Schema's for the provided type</param>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.DescribeAllEnumsAsStrings">
+            <summary>
+            Use the enum names, as opposed to their integer values, when describing enum types
+            </summary>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.DescribeStringEnumsInCamelCase">
+            <summary>
+            If applicable, describe all enum names, regardless of how they appear in code, in camelCase.
+            </summary>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.CustomSchemaIds(System.Func{System.Type,System.String})">
+            <summary>
+            Provide a custom strategy for generating the unique Id's that are used to reference object Schema's
+            </summary>
+            <param name="schemaIdSelector">
+            A lambda that returns a unique identifier for the provided system type
+            </param>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.IgnoreObsoleteProperties">
+            <summary>
+            Ignore any properties that are decorated with the ObsoleteAttribute
+            </summary>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.OperationFilter``1(System.Object[])">
+            <summary>
+            Extend the Swagger Generator with "filters" that can modify Operations after they're initially generated
+            </summary>
+            <typeparam name="TFilter">A type that derives from IOperationFilter</typeparam>
+            <param name="parameters">Optionally inject parameters through filter constructors</param>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.DocumentFilter``1(System.Object[])">
+            <summary>
+            Extend the Swagger Generator with "filters" that can modify SwaggerDocuments after they're initially generated
+            </summary>
+            <typeparam name="TFilter">A type that derives from IDocumentFilter</typeparam>
+            <param name="parameters">Optionally inject parameters through filter constructors</param>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.SchemaFilter``1(System.Object[])">
+            <summary>
+            Extend the Swagger Generator with "filters" that can modify Schemas after they're initially generated
+            </summary>
+            <typeparam name="TFilter">A type that derives from ISchemaFilter</typeparam>
+            <param name="parameters">Optionally inject parameters through filter constructors</param>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.IncludeXmlComments(System.Func{System.Xml.XPath.XPathDocument})">
+            <summary>
+            Inject human-friendly descriptions for Operations, Parameters and Schemas based on XML Comment files
+            </summary>
+            <param name="xmlDocFactory">A factory method that returns XML Comments as an XPathDocument</param>
+        </member>
+        <member name="M:Swashbuckle.AspNetCore.SwaggerGen.SwaggerGenOptions.IncludeXmlComments(System.String)">
+            <summary>
+            Inject human-friendly descriptions for Operations, Parameters and Schemas based on XML Comment files
+            </summary>
+            <param name="filePath">An abolsute path to the file that contains XML Comments</param>
+        </member>
+    </members>
+</doc>

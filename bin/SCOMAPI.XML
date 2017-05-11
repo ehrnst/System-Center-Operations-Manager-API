@@ -8,7 +8,9 @@
             <summary>
             Gets information about a monitoring object.
             </summary>
-            <param name="id">Monitoring object GUID</param>
+            <param name="Id">Monitoring object GUID</param>
+            <response code="400">Bad request check Id</response>
+            <response code="404">Object not found</response>
         </member>
         <member name="M:SCOM_API.Controllers.SCOMMaintenanceController.EnableComputerMaintenance(SCOM_API.Models.SCOMComputerMaintenanceModel)">
             <summary>
@@ -26,6 +28,22 @@
             <response code="400">Bad request. Check json input</response>
             <response code="409">Conflict computer already in maintenance</response>
         </member>
+        <member name="M:SCOM_API.Controllers.SCOMMaintenanceController.EnableObjectMaintenance(SCOM_API.Models.SCOMObjectMaintenanceModel)">
+            <summary>
+            Puts the specified monitoring object in maintenance mode.
+            </summary>
+            <param name="Data">Json string with Id, # of minutes and a comment</param>
+            <example>
+            {
+                "id": "Guid",
+                "Minutes": 10,
+                "comment": "doing maintenance"
+            }
+            </example>
+            <response code="201">Successfully added maintenance mode for the object</response>
+            <response code="400">Bad request. Check json input</response>
+            <response code="409">Conflict: object already in maintenance</response>
+        </member>
         <member name="M:SCOM_API.Controllers.SCOMComputerController.GetComputerPartialMonitoringObject">
              <summary>
             Gets all windows computers.
@@ -35,17 +53,33 @@
             <summary>
             Get computer object from computername.
             </summary>
+            <response code="404">ComputerName empty or computer cannot be found</response>
+            <response code="400">Bad request</response>
         </member>
-        <member name="M:SCOM_API.Controllers.SCOMAlertController.GetAlert">
+        <member name="M:SCOM_API.Controllers.SCOMComputerController.GetLinuxComputers">
+             <summary>
+            Gets all Linux Computers.
+             </summary>
+        </member>
+        <member name="M:SCOM_API.Controllers.SCOMComputerController.GetLinuxComputersByName(System.String)">
             <summary>
-            Get all active alerts
+            Get computer object from computername.
+            </summary>
+            <response code="404">ComputerName empty or computer cannot be found</response>
+            <response code="400">Bad request</response>
+        </member>
+        <member name="M:SCOM_API.Controllers.SCOMAlertController.GetAlerts">
+            <summary>
+            Get all active/new alerts
             </summary>
         </member>
-        <member name="M:SCOM_API.Controllers.SCOMAlertController.GetAlertById(System.String)">
+        <member name="M:SCOM_API.Controllers.SCOMAlertController.GetAlertById(System.Guid)">
             <summary>
             Gets single alert based on ID
             </summary>
             <param name="Id">Guid of the alert</param>
+            <response code="400">Bad request. Check Id parameter</response>
+            <response code="404">Not found</response>
         </member>
         <member name="M:SCOM_API.Controllers.SCOMAlertController.GetAlertByComputerName(System.String,System.Nullable{System.Boolean})">
             <summary>
