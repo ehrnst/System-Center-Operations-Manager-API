@@ -34,7 +34,7 @@ namespace SCOM_API.Controllers
         }
 
         /// <summary>
-        ///Gets all Windows computers with limited properties.
+        ///Gets all Windows computers with basic properties.
         /// </summary>
         
         [Route("Windows")]
@@ -70,7 +70,7 @@ namespace SCOM_API.Controllers
         }
 
         /// <summary>
-        /// Get specific Windows computer
+        /// Get specific Windows computer with basic properties
         /// </summary>
         /// <response code="404">ComputerName empty or computer cannot be found</response>
         /// <response code="400">Bad request</response>
@@ -135,7 +135,7 @@ namespace SCOM_API.Controllers
 
 
         /// <summary>
-        /// Get detailed Windows computer object.
+        /// Get specific Windows computer object with child objects
         /// </summary>
         /// <response code="404">ComputerName empty or computer cannot be found</response>
         /// <response code="400">Bad request</response>
@@ -171,6 +171,8 @@ namespace SCOM_API.Controllers
                     foreach (PartialMonitoringObject windowsComputerObject in windowsComputerObjects)
                     {
 
+                        ReadOnlyCollection<PartialMonitoringObject> RelatedObjects = windowsComputerObject.GetRelatedPartialMonitoringObjects();
+
 
                         SCOMComputerModelDetailed SCOMComputer = new SCOMComputerModelDetailed();
                         SCOMComputer.id = windowsComputerObject.Id;
@@ -178,9 +180,27 @@ namespace SCOM_API.Controllers
                         SCOMComputer.healthState = windowsComputerObject.HealthState.ToString();
                         SCOMComputer.inMaintenance = windowsComputerObject.InMaintenanceMode;
                         SCOMComputer.isAvailable = windowsComputerObject.IsAvailable;
+                        SCOMComputer.relatedObjectsCount = RelatedObjects.Count();
 
+                        //Populate a list of child objects
+                        List<SCOMComputerModelChild> SCOMWindowsComputerChildObjects = new List<SCOMComputerModelChild>();
+                        foreach (PartialMonitoringObject RelatedObject in RelatedObjects)
+                        {
+                            SCOMComputerModelChild ChildObject = new SCOMComputerModelChild();
+                            ChildObject.displayName = RelatedObject.DisplayName;
+                            ChildObject.fullName = RelatedObject.FullName;
+                            ChildObject.id = RelatedObject.Id;
+                            ChildObject.inMaintenance = RelatedObject.InMaintenanceMode;
+                            ChildObject.path = RelatedObject.Path;
+                            ChildObject.healthState = RelatedObject.HealthState.ToString();
+                            
+                            SCOMWindowsComputerChildObjects.Add(ChildObject);
+                        }
+                        //Add the list of all child objects to property of the computer object
+                        SCOMComputer.relatedObjects = SCOMWindowsComputerChildObjects;
+
+                        //Add the computer to the list to return
                         SCOMComputers.Add(SCOMComputer);
-
                     }
 
                     //Successful return
@@ -236,7 +256,7 @@ namespace SCOM_API.Controllers
         }
 
         /// <summary>
-        /// Get Linux computer object with basic properties.
+        /// Get specific Linux computer object with basic properties.
         /// </summary>
         /// <response code="404">ComputerName empty or computer cannot be found</response>
         /// <response code="400">Bad request</response>
@@ -299,7 +319,7 @@ namespace SCOM_API.Controllers
 
 
         /// <summary>
-        /// Get detailed Linux computer object.
+        /// Get specific Linux computer object with child objects.
         /// </summary>
         /// <response code="404">ComputerName empty or computer cannot be found</response>
         /// <response code="400">Bad request</response>
@@ -345,20 +365,25 @@ namespace SCOM_API.Controllers
                         SCOMComputer.inMaintenance = linuxComputerObject.InMaintenanceMode;
                         SCOMComputer.isAvailable = linuxComputerObject.IsAvailable;
                         SCOMComputer.relatedObjectsCount = RelatedObjects.Count();
-                        
+
+                        //Populate a list of child objects
+                        List<SCOMComputerModelChild> SCOMLinuxComputerChildObjects = new List<SCOMComputerModelChild>();
                         foreach (PartialMonitoringObject RelatedObject in RelatedObjects)
                         {
                             SCOMComputerModelChild ChildObject = new SCOMComputerModelChild();
-                            ChildObject.displayName = RelatedObject.DisplayName;
                             ChildObject.id = RelatedObject.Id;
+                            ChildObject.displayName = RelatedObject.DisplayName;
+                            ChildObject.fullName = RelatedObject.FullName;
                             ChildObject.inMaintenance = RelatedObject.InMaintenanceMode;
                             ChildObject.path = RelatedObject.Path;
                             ChildObject.healthState = RelatedObject.HealthState.ToString();
 
-                            SCOMComputer.relatedObjects = ChildObject;
+                            SCOMLinuxComputerChildObjects.Add(ChildObject);
                         }
-                        
+                        //Add the list of all child objects to property of the computer object
+                        SCOMComputer.relatedObjects = SCOMLinuxComputerChildObjects;
 
+                        //Add the computer to the list to return
                         SCOMLinuxComputers.Add(SCOMComputer);
                     }
 

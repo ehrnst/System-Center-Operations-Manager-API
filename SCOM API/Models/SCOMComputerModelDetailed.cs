@@ -18,13 +18,15 @@ namespace SCOM_API.Models
         public Guid id { get; set; }
         public int relatedObjectsCount { get; set; }
 
-        public SCOMComputerModelChild relatedObjects { get; set; }
+        public List<SCOMComputerModelChild> relatedObjects { get; set; }
     }
 
     public class SCOMComputerModelChild
     {
         public Guid id { get; set; }
         public string displayName { get; set; }
+
+        public string fullName { get; set; }
 
         public bool inMaintenance { get; set; }
 
