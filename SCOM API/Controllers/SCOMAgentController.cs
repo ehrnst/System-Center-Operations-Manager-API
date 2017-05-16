@@ -44,7 +44,7 @@ namespace SCOM_API.Controllers
         /// Gets agent managed computer. 
         /// Requires SCOM Administrator previlgies
         /// </summary>
-        [Route("API/Agents{Id:Guid}")]
+        [Route("API/Agents/{Id:Guid}")]
         public PartialAgentManagedComputer GetScomAgents(Guid Id)
         {
             var Agent = mg.Administration.GetPartialAgentManagedComputer(Id);
