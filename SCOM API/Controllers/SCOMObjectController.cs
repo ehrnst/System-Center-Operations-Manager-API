@@ -55,17 +55,39 @@ namespace SCOM_API.Controllers
 
             if (monObject !=null)
             {
-
+                //Get related objects
+                ReadOnlyCollection<PartialMonitoringObject> RelatedObjects = monObject.GetRelatedPartialMonitoringObjects();
+                
                 //Add properties
                 SCOMMonitoringObjectModel mObject = new SCOMMonitoringObjectModel();
+                mObject.id = monObject.Id;
                 mObject.displayName = monObject.DisplayName;
+                mObject.fullName = monObject.FullName;
+                mObject.path = monObject.Path;
                 mObject.healthState = monObject.HealthState.ToString();
                 mObject.stateLastModified = monObject.StateLastModified.ToString();
                 mObject.inMaintenance = monObject.InMaintenanceMode;
-                mObject.path = monObject.Path;
+
+                //Populate a list of child objects
+                List<SCOMObjectModelChild> SCOMMonitoringObjectChildObjects = new List<SCOMObjectModelChild>();
+                foreach (PartialMonitoringObject RelatedObject in RelatedObjects)
+                {
+                    SCOMObjectModelChild ChildObject = new SCOMObjectModelChild();
+                    ChildObject.id = RelatedObject.Id;
+                    ChildObject.displayName = RelatedObject.DisplayName;
+                    ChildObject.fullName = RelatedObject.FullName;
+                    ChildObject.inMaintenance = RelatedObject.InMaintenanceMode;
+                    ChildObject.path = RelatedObject.Path;
+                    ChildObject.healthState = RelatedObject.HealthState.ToString();
+
+                    SCOMMonitoringObjectChildObjects.Add(ChildObject);
+                }
+                //Add the list of all child objects to property of the monitoring object
+                mObject.relatedObjects = SCOMMonitoringObjectChildObjects;
 
                 MonitoringObject.Add(mObject);
-
+                
+                //Return object
                 return Json(MonitoringObject);
             }
 
@@ -74,7 +96,7 @@ namespace SCOM_API.Controllers
             { 
            
                 HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.NotFound);
-                message.Content = new StringContent("Cannot find object");
+                message.Content = new StringContent("Monitoring object not found");
                 throw new HttpResponseException(message);
             }
         }
