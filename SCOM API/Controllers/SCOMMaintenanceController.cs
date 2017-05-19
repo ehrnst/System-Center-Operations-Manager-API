@@ -6,8 +6,8 @@ using System.Net.Http;
 using System.Web.Http;
 using Microsoft.EnterpriseManagement;
 using Microsoft.EnterpriseManagement.Common;
-using Microsoft.EnterpriseManagement.Administration;
 using Microsoft.EnterpriseManagement.Monitoring;
+using Microsoft.EnterpriseManagement.Monitoring.MaintenanceSchedule;
 using System.Web;
 using Microsoft.EnterpriseManagement.Configuration;
 using Newtonsoft.Json;
@@ -176,6 +176,61 @@ namespace SCOM_API.Controllers
             //Return list of computers as Json
             return Json(MaintenanceObjects);
 
+        }
+
+        /// <summary>
+        /// Puts the specified monitoring object in maintenance mode.
+        /// </summary>
+        /// <param name="Data">Json string with Id, # of minutes and a comment</param>
+        /// <example>
+        /// {
+        ///     "id": "Guid",
+        ///     "Minutes": 10,
+        ///     "comment": "doing maintenance"
+        /// }
+        /// </example>
+        /// <response code="201">Successfully added maintenance mode for the object</response>
+        /// <response code="400">Bad request. Check json input</response>
+        /// <response code="409">Conflict: object already in maintenance</response>
+        [HttpPost]
+        [Route("API/ObjectMaintenanceSchedule")]
+        public IHttpActionResult ScheduleObjectMaintenance(SCOMObjectSchedMaintenanceModel Data)
+        {
+            
+            //create a Guid from the json input
+            var ObjectId = new Guid(Data.id);
+            //get the monitoring object by Guid
+            var monObject = mg.EntityObjects.GetObject<MonitoringObject>(ObjectId, ObjectQueryOptions.Default);
+            System.Collections.Generic.List<System.Guid> list = new System.Collections.Generic.List<System.Guid>();
+
+            //add the monitoring object guids to list
+            list.Add(monObject.Id);
+
+            //create a recurrencePattern this is 'sourced' from OmCommands.10.dll ( new-scommaintenanceSchedule CMDLET )
+            //read more: https://docs.microsoft.com/en-us/powershell/systemcenter/systemcenter2016/operationsmanager/vlatest/new-scommaintenanceschedule
+            OnceRecurrence recurrencePattern;
+            recurrencePattern = new OnceRecurrence(1, 1, 0, 1, 0, 0);
+
+
+            //Getting data from Json post
+            string comments = Data.comment;
+            bool isRecurrence = false;
+            bool recursive = false;
+            string displayname = Data.scheduleName;
+            //Create a timspan and return duration
+            DateTime activeStartTime = Data.StartTime.ToUniversalTime();
+            DateTime activeEndDate = Data.EndTime.ToUniversalTime();
+            TimeSpan span = activeEndDate.Subtract(activeStartTime);
+            int duration = (int)span.TotalMinutes;
+
+            //Create the Maintenance schedule
+            MaintenanceSchedule Sched = new MaintenanceSchedule(mg, displayname, recursive, true, list, duration, activeStartTime, activeEndDate, MaintenanceModeReason.PlannedOther, comments, isRecurrence, recurrencePattern );
+
+
+            System.Guid guid = MaintenanceSchedule.CreateMaintenanceSchedule(Sched, mg);
+            return Json(guid);
+
+            
         }
 
     }
