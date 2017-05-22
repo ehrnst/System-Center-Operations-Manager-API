@@ -13,6 +13,7 @@ using Microsoft.EnterpriseManagement.Configuration;
 using System.Configuration;
 using System.Collections.ObjectModel;
 using Swashbuckle.AspNetCore.SwaggerGen;
+using System.Web.Http.Description;
 
 namespace SCOM_API.Controllers
 {
@@ -118,6 +119,7 @@ namespace SCOM_API.Controllers
         /// <param name="TicketId">set if you want to update alert with a ticket id</param>
         /// <param name="Id">the alert GUID</param>
         [HttpPut]
+        [ResponseType(typeof(IEnumerable<MonitoringAlert>))]
         [Route("Alerts")]
         public IList<MonitoringAlert> UpdateAlertById(Guid Id, byte ResolutionState, string TicketId = "")
         {

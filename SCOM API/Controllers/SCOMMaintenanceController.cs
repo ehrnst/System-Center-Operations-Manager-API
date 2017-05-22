@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using SCOM_API.Models;
 using System.Configuration;
+using System.Web.Http.Description;
 
 namespace SCOM_API.Controllers
 {
@@ -46,6 +47,7 @@ namespace SCOM_API.Controllers
         /// <response code="400">Bad request. Check json input</response>
         /// <response code="409">Conflict computer already in maintenance</response>
         [HttpPost]
+        [ResponseType(typeof(IEnumerable<SCOMComputerMaintenanceModel>))]
         [Route("API/ComputerMaintenance")]
         public IHttpActionResult EnableComputerMaintenance(SCOMComputerMaintenanceModel Data)
         {
@@ -125,6 +127,7 @@ namespace SCOM_API.Controllers
         /// <response code="400">Bad request. Check json input</response>
         /// <response code="409">Conflict: object already in maintenance</response>
         [HttpPost]
+        [ResponseType(typeof(IEnumerable<SCOMObjectMaintenanceModel>))]
         [Route("API/ObjectMaintenance")]
         public IHttpActionResult EnableObjectMaintenance(SCOMObjectMaintenanceModel Data)
         {
@@ -179,21 +182,28 @@ namespace SCOM_API.Controllers
         }
 
         /// <summary>
-        /// Puts the specified monitoring object in maintenance mode.
+        /// Creates a new maintenance schedule with the specified monitoring objects.
         /// </summary>
-        /// <param name="Data">Json string with Id, # of minutes and a comment</param>
+        /// <param name="Data">Json string scheduleName, object ids, StartTime, EndTime, comment</param>
         /// <example>
         /// {
-        ///     "id": "Guid",
-        ///     "Minutes": 10,
+        ///     "scheduleName": "string",
+        ///     "id": "monitoringObjectId",
+        ///     "StartTime": "2017-05-22T07:01:00.374Z",
+        ///     "EndTime": "2017-05-22T08:01:00.374Z",
         ///     "comment": "doing maintenance"
         /// }
         /// </example>
+        /// <remarks>
+        /// ##SCOM 2016 Only##
+        /// Only non recurring schedules with one object is supported. Maintenance reason is hard coded to 'PlannedOther'
+        /// </remarks>
         /// <response code="201">Successfully added maintenance mode for the object</response>
         /// <response code="400">Bad request. Check json input</response>
-        /// <response code="409">Conflict: object already in maintenance</response>
+
         [HttpPost]
-        [Route("API/ObjectMaintenanceSchedule")]
+        [ResponseType(typeof(IEnumerable<SCOMObjectSchedMaintenanceModel>))]
+        [Route("API/MaintenanceSchedule")]
         public IHttpActionResult ScheduleObjectMaintenance(SCOMObjectSchedMaintenanceModel Data)
         {
             
@@ -201,34 +211,49 @@ namespace SCOM_API.Controllers
             var ObjectId = new Guid(Data.id);
             //get the monitoring object by Guid
             var monObject = mg.EntityObjects.GetObject<MonitoringObject>(ObjectId, ObjectQueryOptions.Default);
-            System.Collections.Generic.List<System.Guid> list = new System.Collections.Generic.List<System.Guid>();
+            System.Collections.Generic.List<System.Guid> ObjectList = new System.Collections.Generic.List<System.Guid>();
 
             //add the monitoring object guids to list
-            list.Add(monObject.Id);
+            ObjectList.Add(monObject.Id);
 
             //create a recurrencePattern this is 'sourced' from OmCommands.10.dll ( new-scommaintenanceSchedule CMDLET )
             //read more: https://docs.microsoft.com/en-us/powershell/systemcenter/systemcenter2016/operationsmanager/vlatest/new-scommaintenanceschedule
             OnceRecurrence recurrencePattern;
-            recurrencePattern = new OnceRecurrence(1, 1, 0, 1, 0, 0);
+            recurrencePattern = new OnceRecurrence(1, 1, 0, 0, 0, 0);
 
 
             //Getting data from Json post
             string comments = Data.comment;
             bool isRecurrence = false;
-            bool recursive = false;
+            bool isEnabled = true;
+            bool recursive = true;
             string displayname = Data.scheduleName;
             //Create a timspan and return duration
-            DateTime activeStartTime = Data.StartTime.ToUniversalTime();
-            DateTime activeEndDate = Data.EndTime.ToUniversalTime();
+            DateTime activeStartTime = Data.StartTime;
+            DateTime activeEndDate = Data.EndTime;
             TimeSpan span = activeEndDate.Subtract(activeStartTime);
             int duration = (int)span.TotalMinutes;
 
             //Create the Maintenance schedule
-            MaintenanceSchedule Sched = new MaintenanceSchedule(mg, displayname, recursive, true, list, duration, activeStartTime, activeEndDate, MaintenanceModeReason.PlannedOther, comments, isRecurrence, recurrencePattern );
+            MaintenanceSchedule Sched = new MaintenanceSchedule(mg, displayname, recursive, isEnabled, ObjectList, duration, activeStartTime, activeEndDate, MaintenanceModeReason.PlannedOther, comments, isRecurrence, recurrencePattern );
 
 
+            //Create the maintenance schedule
             System.Guid guid = MaintenanceSchedule.CreateMaintenanceSchedule(Sched, mg);
-            return Json(guid);
+
+            //Add properties to class and return the list as Json
+            var shed = MaintenanceSchedule.GetMaintenanceScheduleById(guid, mg);
+            List<SCOMObjectSchedMaintenanceModel> MaintenanceScheduleList = new List<SCOMObjectSchedMaintenanceModel>();
+            SCOMObjectSchedMaintenanceModel mSched = new SCOMObjectSchedMaintenanceModel ();
+            mSched.id = shed.ScheduleId.ToString();
+            mSched.StartTime = shed.ActiveStartTime;
+            mSched.EndTime = shed.ScheduledEndTime;
+            mSched.scheduleName = shed.ScheduleName;
+            mSched.comment = shed.Comments;
+
+            MaintenanceScheduleList.Add(mSched);
+
+            return Json(MaintenanceScheduleList);
 
             
         }
