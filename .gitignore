@@ -242,4 +242,4 @@ ModelManifest.xml
 .paket/paket.exe
 
 # FAKE - F# Make
-.fake/
+.fake/SCOM API\Web.config
