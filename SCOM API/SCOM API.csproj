@@ -178,6 +178,9 @@
       <HintPath>..\packages\Microsoft.Net.Http.Headers.1.0.0\lib\netstandard1.1\Microsoft.Net.Http.Headers.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.SystemCenter.OperationsManagerV10.Commands">
+      <HintPath>\\distr\Users\aa98\PUBLIC\Microsoft.SystemCenter.OperationsManagerV10.Commands.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
@@ -272,6 +275,7 @@
     </Compile>
     <Compile Include="Models\MaintenanceScheduleModel.cs" />
     <Compile Include="Models\SCOMComputerModelDetailed.cs" />
+    <Compile Include="Models\SCOMObjectScheduleMaintenanceModel.cs" />
     <Compile Include="Models\SCOMObjectMaintenanceModel.cs" />
     <Compile Include="Models\SCOMComputerMaintenanceModel.cs" />
     <Compile Include="Models\SCOMMonitoringObjectModel.cs" />

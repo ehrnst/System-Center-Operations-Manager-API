@@ -15,6 +15,7 @@ using System.Collections.ObjectModel;
 using SCOM_API.Models;
 using System.Configuration;
 using static SCOM_API.Models.SCOMComputerModelDetailed;
+using System.Web.Http.Description;
 
 namespace SCOM_API.Controllers
 {
@@ -39,6 +40,7 @@ namespace SCOM_API.Controllers
         
         [Route("Windows")]
         [HttpGet]
+        [ResponseType(typeof(IEnumerable<SCOMComputerModel>))]
         public IHttpActionResult GetComputerPartialMonitoringObject()
         {
             ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria("Name = 'Microsoft.Windows.Computer'");
@@ -76,6 +78,7 @@ namespace SCOM_API.Controllers
         /// <response code="400">Bad request</response>
         [Route("Windows/{ComputerName}")]
         [HttpGet]
+        [ResponseType(typeof(IEnumerable<SCOMComputerModel>))]
         public IHttpActionResult GetComputerPartialMonitoringObjectByName(string ComputerName)
         {
             ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria("Name = 'Microsoft.Windows.Computer'");
@@ -141,6 +144,7 @@ namespace SCOM_API.Controllers
         /// <response code="400">Bad request</response>
         [Route("Windows/{ComputerName}/Detailed")]
         [HttpGet]
+        [ResponseType(typeof(IEnumerable<SCOMComputerModelDetailed>))]
         public IHttpActionResult GetComputerPartialMonitoringObjectByNameDetailed(string ComputerName)
         {
             ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria("Name = 'Microsoft.Windows.Computer'");
@@ -224,6 +228,7 @@ namespace SCOM_API.Controllers
 
         [Route("Linux")]
         [HttpGet]
+        [ResponseType(typeof(IEnumerable<SCOMComputerModel>))]
         public IHttpActionResult GetLinuxComputers()
         {
             ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria("Name = 'Microsoft.Linux.Computer'");
@@ -262,6 +267,7 @@ namespace SCOM_API.Controllers
         /// <response code="400">Bad request</response>
         [Route("Linux/{ComputerName}")]
         [HttpGet]
+        [ResponseType(typeof(IEnumerable<SCOMComputerModel>))]
         public IHttpActionResult GetLinuxComputersByName(string ComputerName)
         {
             ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria("Name = 'Microsoft.Linux.Computer'");
@@ -325,6 +331,7 @@ namespace SCOM_API.Controllers
         /// <response code="400">Bad request</response>
         [Route("Linux/{ComputerName}/Detailed")]
         [HttpGet]
+        [ResponseType(typeof(IEnumerable<SCOMComputerModelDetailed>))]
         public IHttpActionResult GetLinuxComputersByNameDetailed(string ComputerName)
         {
             ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria("Name = 'Microsoft.Linux.Computer'");
