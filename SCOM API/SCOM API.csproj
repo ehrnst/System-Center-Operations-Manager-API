@@ -120,15 +120,15 @@
     </Reference>
     <Reference Include="Microsoft.EnterpriseManagement.Core, Version=7.0.5000.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\\i2v-scom16t-001\c$\Program Files\Microsoft System Center 2016\Operations Manager\Server\SDK Binaries\Microsoft.EnterpriseManagement.Core.dll</HintPath>
+      <HintPath>\\distr\users\aa98\PUBLIC\Microsoft.EnterpriseManagement.Core.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.EnterpriseManagement.OperationsManager, Version=7.0.5000.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\\i2v-scom16t-001\c$\Program Files\Microsoft System Center 2016\Operations Manager\Server\SDK Binaries\Microsoft.EnterpriseManagement.OperationsManager.dll</HintPath>
+      <HintPath>\\distr\users\aa98\PUBLIC\Microsoft.EnterpriseManagement.OperationsManager.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.EnterpriseManagement.Runtime, Version=7.0.5000.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>\\i2v-scom16t-001\c$\Program Files\Microsoft System Center 2016\Operations Manager\Server\SDK Binaries\Microsoft.EnterpriseManagement.Runtime.dll</HintPath>
+      <HintPath>\\distr\users\aa98\PUBLIC\Microsoft.EnterpriseManagement.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
