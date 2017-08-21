@@ -7,14 +7,15 @@ using System.Web.Http;
 using Microsoft.EnterpriseManagement;
 using Microsoft.EnterpriseManagement.Common;
 using Microsoft.EnterpriseManagement.Monitoring;
-using Microsoft.EnterpriseManagement.Monitoring.MaintenanceSchedule;
 using System.Web;
+using Microsoft.SystemCenter.OperationsManagerV10.Commands;
 using Microsoft.EnterpriseManagement.Configuration;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using SCOM_API.Models;
 using System.Configuration;
 using System.Web.Http.Description;
+using Microsoft.EnterpriseManagement.Monitoring.MaintenanceSchedule;
 
 namespace SCOM_API.Controllers
 {
@@ -55,7 +56,7 @@ namespace SCOM_API.Controllers
             IList<ManagementPackClass> monClasses = mg.EntityTypes.GetClasses(classCriteria);
             MonitoringObjectCriteria criteria = new MonitoringObjectCriteria(string.Format("Name = '{0}'", Data.DisplayName.ToString()), monClasses[0]);
             List<MonitoringObject> monObjects = new List<MonitoringObject>();
-            
+
             List<SCOMComputerMaintenanceModel> MaintenanceComputers = new List<SCOMComputerMaintenanceModel>();
 
             ///travers trough all classes to get monitoring objects
@@ -83,7 +84,7 @@ namespace SCOM_API.Controllers
                         maintenanceComputer.EndTime = schedEndTime;
                         maintenanceComputer.Minutes = Data.Minutes;
                         maintenanceComputer.comment = comment;
-                        
+
                         //add computers to list
                         MaintenanceComputers.Add(maintenanceComputer);
 
@@ -131,6 +132,14 @@ namespace SCOM_API.Controllers
         [Route("API/ObjectMaintenance")]
         public IHttpActionResult EnableObjectMaintenance(SCOMObjectMaintenanceModel Data)
         {
+            //Validate input
+            if (!ModelState.IsValid)
+            {
+                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                message.Content = new StringContent("Missing a required parameter?");
+                throw new HttpResponseException(message);
+            }
+
             //create a Guid from the json input
             var ObjectId = new Guid(Data.id);
             //get the monitoring object by Guid
@@ -140,41 +149,41 @@ namespace SCOM_API.Controllers
 
             List<SCOMObjectMaintenanceModel> MaintenanceObjects = new List<SCOMObjectMaintenanceModel>();
 
-                if (!monObject.InMaintenanceMode)
+            if (!monObject.InMaintenanceMode)
+            {
                 {
-                    {
-                        //set maintenance properties
-                        DateTime startTime = DateTime.UtcNow;
-                        DateTime schedEndTime = DateTime.UtcNow.AddMinutes(Data.Minutes);
-                        MaintenanceModeReason reason = MaintenanceModeReason.PlannedOther;
-                        string comment = Data.comment;
+                    //set maintenance properties
+                    DateTime startTime = DateTime.UtcNow;
+                    DateTime schedEndTime = DateTime.UtcNow.AddMinutes(Data.Minutes);
+                    MaintenanceModeReason reason = MaintenanceModeReason.PlannedOther;
+                    string comment = Data.comment;
 
-                        monObject.ScheduleMaintenanceMode(startTime, schedEndTime, reason, comment);
+                    monObject.ScheduleMaintenanceMode(startTime, schedEndTime, reason, comment);
 
-                        //Add properties to list
-                        SCOMObjectMaintenanceModel maintenanceObject = new SCOMObjectMaintenanceModel();
-                        maintenanceObject.displayName = monObject.DisplayName;
-                        maintenanceObject.id = monObject.Id.ToString();
-                        maintenanceObject.EndTime = schedEndTime;
-                        maintenanceObject.Minutes = Data.Minutes;
-                        maintenanceObject.comment = comment;
+                    //Add properties to list
+                    SCOMObjectMaintenanceModel maintenanceObject = new SCOMObjectMaintenanceModel();
+                    maintenanceObject.displayName = monObject.DisplayName;
+                    maintenanceObject.id = monObject.Id.ToString();
+                    maintenanceObject.EndTime = schedEndTime;
+                    maintenanceObject.Minutes = Data.Minutes;
+                    maintenanceObject.comment = comment;
 
-                        //add computers to list
-                        MaintenanceObjects.Add(maintenanceObject);
-
-                    }
-                }
-
-                //If object already in maintenance. Throw conflict message
-                else
-                {
-                    MaintenanceWindow MaintenanceWindow = monObject.GetMaintenanceWindow();
-
-                    HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.Conflict);
-                    message.Content = new StringContent("Object already in maintenance until" + MaintenanceWindow.ScheduledEndTime);
-                    throw new HttpResponseException(message);
+                    //add computers to list
+                    MaintenanceObjects.Add(maintenanceObject);
 
                 }
+            }
+
+            //If object already in maintenance. Throw conflict message
+            else
+            {
+                MaintenanceWindow MaintenanceWindow = monObject.GetMaintenanceWindow();
+
+                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.Conflict);
+                message.Content = new StringContent("Object already in maintenance until" + MaintenanceWindow.ScheduledEndTime);
+                throw new HttpResponseException(message);
+
+            }
 
             //Return list of computers as Json
             return Json(MaintenanceObjects);
@@ -188,7 +197,7 @@ namespace SCOM_API.Controllers
         /// <example>
         /// {
         ///     "scheduleName": "string",
-        ///     "id": "monitoringObjectId",
+        ///     "id": "[monitoringObjectId]",
         ///     "StartTime": "2017-05-22T07:01:00.374Z",
         ///     "EndTime": "2017-05-22T08:01:00.374Z",
         ///     "comment": "doing maintenance"
@@ -196,7 +205,8 @@ namespace SCOM_API.Controllers
         /// </example>
         /// <remarks>
         /// ##SCOM 2016 Only##
-        /// Only non recurring schedules with one object is supported. Maintenance reason is hard coded to 'PlannedOther'
+        /// Only non recurring schedules are supported. Maintenance reason will be hard coded to 'PlannedOther'
+        /// Use the other endpoints to obtain your MonitoringObjectId
         /// </remarks>
         /// <response code="201">Successfully added maintenance mode for the object</response>
         /// <response code="400">Bad request. Check json input</response>
@@ -206,15 +216,24 @@ namespace SCOM_API.Controllers
         [Route("API/MaintenanceSchedule")]
         public IHttpActionResult ScheduleObjectMaintenance(SCOMObjectSchedMaintenanceModel Data)
         {
-            
-            //create a Guid from the json input
-            var ObjectId = new Guid(Data.id);
-            //get the monitoring object by Guid
-            var monObject = mg.EntityObjects.GetObject<MonitoringObject>(ObjectId, ObjectQueryOptions.Default);
-            System.Collections.Generic.List<System.Guid> ObjectList = new System.Collections.Generic.List<System.Guid>();
+            //Validate post
+            if (!ModelState.IsValid)
+            {
+                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                message.Content = new StringContent("Missing a required parameter?");
+                throw new HttpResponseException(message);
+            }
 
-            //add the monitoring object guids to list
-            ObjectList.Add(monObject.Id);
+            //LOOP through the id array and add each GUID to the object list
+            System.Collections.Generic.List<System.Guid> ObjectList = new System.Collections.Generic.List<System.Guid>();
+            string[] array = Data.id;
+            foreach (string s in array)
+            {
+                var item = new Guid(s);
+
+                ObjectList.Add(item);
+            }
+            //
 
             //create a recurrencePattern this is 'sourced' from OmCommands.10.dll ( new-scommaintenanceSchedule CMDLET )
             //read more: https://docs.microsoft.com/en-us/powershell/systemcenter/systemcenter2016/operationsmanager/vlatest/new-scommaintenanceschedule
@@ -235,27 +254,26 @@ namespace SCOM_API.Controllers
             int duration = (int)span.TotalMinutes;
 
             //Create the Maintenance schedule
-            MaintenanceSchedule Sched = new MaintenanceSchedule(mg, displayname, recursive, isEnabled, ObjectList, duration, activeStartTime, activeEndDate, MaintenanceModeReason.PlannedOther, comments, isRecurrence, recurrencePattern );
-
+            MaintenanceSchedule Sched = new MaintenanceSchedule(mg, displayname, recursive, isEnabled, ObjectList, duration, activeStartTime, activeEndDate, MaintenanceModeReason.PlannedOther, comments, isRecurrence, recurrencePattern);
 
             //Create the maintenance schedule
             System.Guid guid = MaintenanceSchedule.CreateMaintenanceSchedule(Sched, mg);
 
-            //Add properties to class and return the list as Json
+            //Add properties to class
             var shed = MaintenanceSchedule.GetMaintenanceScheduleById(guid, mg);
             List<SCOMObjectSchedMaintenanceModel> MaintenanceScheduleList = new List<SCOMObjectSchedMaintenanceModel>();
-            SCOMObjectSchedMaintenanceModel mSched = new SCOMObjectSchedMaintenanceModel ();
-            mSched.id = shed.ScheduleId.ToString();
+            SCOMObjectSchedMaintenanceModel mSched = new SCOMObjectSchedMaintenanceModel();
+            mSched.id = array;
             mSched.StartTime = shed.ActiveStartTime;
             mSched.EndTime = shed.ScheduledEndTime;
             mSched.scheduleName = shed.ScheduleName;
             mSched.comment = shed.Comments;
 
             MaintenanceScheduleList.Add(mSched);
-
+            //return the post/class as Json
             return Json(MaintenanceScheduleList);
 
-            
+
         }
 
     }

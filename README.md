@@ -43,7 +43,7 @@ Bringing SCOM in to the 21. century with a Restful Web API.
 | ------ | ------ |
 | [POST] API/ComputerMaintenance | Put the specific computer object and all child in maintenance mode |
 | [POST] API/ObjectMaintenance | Put the specific monitoring object and all child in maintenance mode |
-| [POST] API/MaintenanceSchedule | Create a new maintenance schedule. SCOM 2016 ONLY |
+| [POST] API/MaintenanceSchedule | Create a new maintenance schedule. Supports multiple object guids in an array. SCOM 2016 ONLY |
 
 ### Object
 
