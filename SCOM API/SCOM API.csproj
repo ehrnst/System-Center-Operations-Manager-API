@@ -273,6 +273,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\SCOMAlertUpdateModel.cs" />
     <Compile Include="Models\SCOMComputerModelDetailed.cs" />
     <Compile Include="Models\SCOMObjectScheduleMaintenanceModel.cs" />
     <Compile Include="Models\SCOMObjectMaintenanceModel.cs" />

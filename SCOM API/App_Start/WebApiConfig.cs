@@ -13,11 +13,13 @@ namespace SCOM_API
             // Web API routes
             config.MapHttpAttributeRoutes();
 
+            
             config.Routes.MapHttpRoute(
                 name: "System Center Operations Manager API",
                 routeTemplate: "API/{controller}/{action}/{id}",
                 defaults: new { id = RouteParameter.Optional }
                 );
+
 
             // Web API configuration and services
             config.Filters.Add(new AuthorizeAttribute());
