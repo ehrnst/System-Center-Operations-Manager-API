@@ -14,9 +14,11 @@ using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using SCOM_API.Models;
 using System.Configuration;
+using System.Web.Http.Description;
 
 namespace SCOM_API.Controllers
 {
+    [RoutePrefix("API/MonitoringObject")]
     public class SCOMObjectController : ApiController
     {
         ManagementGroup mg = null;
@@ -38,7 +40,7 @@ namespace SCOM_API.Controllers
         /// <response code="400">Bad request check Id</response>
         /// <response code="404">Object not found</response>
         [HttpGet]
-        [Route("API/MonitoringObject/{id}")]
+        [Route("{id}")]
         public IHttpActionResult GetMonitoringObject(Guid Id)
         {
             //Check if guid is not empty
@@ -53,11 +55,11 @@ namespace SCOM_API.Controllers
 
             List<SCOMMonitoringObjectModel> MonitoringObject = new List<SCOMMonitoringObjectModel>();
 
-            if (monObject !=null)
+            if (monObject != null)
             {
                 //Get related objects
                 ReadOnlyCollection<PartialMonitoringObject> RelatedObjects = monObject.GetRelatedPartialMonitoringObjects();
-                
+
                 //Add properties
                 SCOMMonitoringObjectModel mObject = new SCOMMonitoringObjectModel();
                 mObject.id = monObject.Id;
@@ -86,20 +88,84 @@ namespace SCOM_API.Controllers
                 mObject.relatedObjects = SCOMMonitoringObjectChildObjects;
 
                 MonitoringObject.Add(mObject);
-                
+
                 //Return object
                 return Json(MonitoringObject);
             }
 
             //If no object found return error code
             else
-            { 
-           
+            {
+
                 HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.NotFound);
                 message.Content = new StringContent("Monitoring object not found");
                 throw new HttpResponseException(message);
             }
         }
 
+        /// <summary>
+        ///Gets all monitoring objects of specified class
+        ///Limited properties returned. Use MonitoringObject/Id endpoint for more details
+        /// </summary>
+        ///<param name="classId">Your class guid</param>
+        /// <response code="200">OK: returns member of class</response>
+        /// <response code="204">class found but no objects / no members exist</response>
+        /// <response code="400">Bad request check classId</response>
+        /// <response code="404">No such class</response>
+
+        [Route("class/{classId}")]
+        [HttpGet]
+        [ResponseType(typeof(IEnumerable<SCOMClassObjectModel>))]
+        public IHttpActionResult GetClassPartialMonitoringObject(Guid classId)
+        {
+
+            if (classId == Guid.Empty)
+            {
+                throw new HttpResponseException(Request
+                .CreateResponse(HttpStatusCode.BadRequest));
+            }
+
+            //Use the input class id to create a criteria for our query
+            ManagementPackClassCriteria classCriteria = new ManagementPackClassCriteria(string.Format("Id = '{0}'", classId.ToString()));
+            IList<ManagementPackClass> monitoringClasses = mg.EntityTypes.GetClasses(classCriteria);
+
+
+            List<PartialMonitoringObject> inputClassObjects = new List<PartialMonitoringObject>();
+
+            IObjectReader<PartialMonitoringObject> reader = mg.EntityObjects.GetObjectReader<PartialMonitoringObject>(monitoringClasses[0], ObjectQueryOptions.Default);
+
+            inputClassObjects.AddRange(reader);
+
+            List<SCOMClassObjectModel> classObjects = new List<SCOMClassObjectModel>();
+
+            //If objects are found add them to list and return
+            if (inputClassObjects.Count > 0)
+            {
+
+                foreach (PartialMonitoringObject classObject in inputClassObjects)
+                {
+                    SCOMClassObjectModel inputClassObject = new SCOMClassObjectModel();
+                    inputClassObject.id = classObject.Id;
+                    inputClassObject.displayName = classObject.DisplayName;
+                    inputClassObject.healthState = classObject.HealthState.ToString();
+                    inputClassObject.path = classObject.Path;
+
+                    classObjects.Add(inputClassObject);
+                }
+
+                return Json(classObjects);
+            }
+
+            //if class does not have any monitoring objects return 'no content'
+            else
+            {
+                HttpResponseMessage message = new HttpResponseMessage(HttpStatusCode.NoContent);
+                message.Content = new StringContent("Class found but no object exist");
+                throw new HttpResponseException(message);
+            }
+
+        }
     }
-}//END
+
+}
+//END
