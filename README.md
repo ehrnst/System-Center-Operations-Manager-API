@@ -22,8 +22,9 @@ Bringing SCOM in to the 21. century with a Restful Web API.
 | ------ | ------ |
 | [GET] API/Alerts | Gets all open alerts |
 | [GET] API/Alert/{id} | Get a single alert |
-| [PUT] API/Alert | Update the specified alert with resolution state, TicketId |
-| [GET] API/Alert/{ComputerName} | Get all alert from specific computer, use IncClosed=true to include open and closed alerts |
+| [PUT] API/Alerts/{id} | Update the specified alert with common properties and resolution state |
+| [GET] API/Alert/Computer/{ComputerName} | Get all alert from specific computer, use IncClosed=true to include open and closed alerts |
+| [GET] API/Alert/MonitoringObject/{MonitoringObjectId} | Get all alert from specific monitoring object, use IncClosed=true to include open and closed alerts |
 
 ### Computer
 
@@ -50,6 +51,7 @@ Bringing SCOM in to the 21. century with a Restful Web API.
 | Route | Description |
 | ------ | ------ |
 | [GET] API/MonitoringObject/{id} | Get a monitoring object and all child object |
+| [GET] API/MonitoringObject/class/{classId} | Get all objects of a class. Limited properties returned. |
 
 
 ### Installation
@@ -59,3 +61,6 @@ Bringing SCOM in to the 21. century with a Restful Web API.
 - Set your application pool to use Network Service
 - Enable windows authentication (basic if needed)
 - Copy SCOM specific .dll's to the BIN folder where you extracted the .Zip
+
+### Remarks
+- Please note that versioning isn't implemented and current version have breaking changes to Alert endpoints. Please review the changes to get an understanding on how this affects your application. For first time users this is not a problem.
