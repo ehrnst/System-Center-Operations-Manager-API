@@ -51,6 +51,7 @@ Bringing SCOM in to the 21. century with a Restful Web API.
 | Route | Description |
 | ------ | ------ |
 | [GET] API/MonitoringObject/{id} | Get a monitoring object and all child object |
+| [GET] API/MonitoringObject/class/{classId} | Get all objects of a class. Limited properties returned. |
 
 
 ### Installation
