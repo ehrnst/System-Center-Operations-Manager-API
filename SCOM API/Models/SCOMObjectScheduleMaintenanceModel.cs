@@ -9,29 +9,39 @@ namespace SCOM_API.Models
     public class SCOMObjectSchedMaintenanceModel
     {
         /// <summary>
+        /// Guid for the maintenance schedule
+        /// </summary>
+        /// remarks GUID will be created
+        public Guid scheduleId { get; set; }
+
+        /// <summary>
         /// Name of the maintenance schedule
         /// </summary>
         [Required]
         public string scheduleName { get; set; }
-        [Required]
+
         /// <summary>
         /// Monitoring object ID(s)
         /// </summary>
-        public string[] id { get; set; }
         [Required]
+        public string[] id { get; set; }
+
         /// <summary>
         /// Start time and date
         /// </summary>
-        public DateTime StartTime { get; set; }
         [Required]
+        public DateTime StartTime { get; set; }
+
         /// <summary>
         /// End time and date
         /// </summary>
-        public DateTime EndTime { get; set; }
         [Required]
+        public DateTime EndTime { get; set; }
+
         /// <summary>
         /// Comment
         /// </summary>
+        [Required]
         public string comment { get; set; }
     }
 }
