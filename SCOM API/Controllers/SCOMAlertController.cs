@@ -248,7 +248,7 @@ namespace SCOM_API.Controllers
 
             }
             // creating OK response
-            return Ok(new { message = "Updated ticket", ticketId = Id.ToString() });
+            return Ok(new { message = "Alert updated", alertId = Id.ToString() });
 
         }
 
