@@ -119,16 +119,16 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.EnterpriseManagement.Core, Version=7.0.5000.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>\\distr\users\aa98\PUBLIC\Microsoft.EnterpriseManagement.Core.dll</HintPath>
+      <HintPath>..\packages\Unofficial.Microsoft.EnterpriseManagement.OperationsManager.7.0.5000\lib\net40\Microsoft.EnterpriseManagement.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.EnterpriseManagement.OperationsManager, Version=7.0.5000.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>\\distr\users\aa98\PUBLIC\Microsoft.EnterpriseManagement.OperationsManager.dll</HintPath>
+      <HintPath>..\packages\Unofficial.Microsoft.EnterpriseManagement.OperationsManager.7.0.5000\lib\net40\Microsoft.EnterpriseManagement.OperationsManager.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.EnterpriseManagement.Runtime, Version=7.0.5000.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>\\distr\users\aa98\PUBLIC\Microsoft.EnterpriseManagement.Runtime.dll</HintPath>
+      <HintPath>..\packages\Unofficial.Microsoft.EnterpriseManagement.OperationsManager.7.0.5000\lib\net40\Microsoft.EnterpriseManagement.Runtime.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.Extensions.Configuration.Abstractions, Version=1.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Configuration.Abstractions.1.0.0\lib\netstandard1.0\Microsoft.Extensions.Configuration.Abstractions.dll</HintPath>
@@ -270,6 +270,7 @@
     <Compile Include="Controllers\SCOMComputerController.cs" />
     <Compile Include="Controllers\SCOMAlertController.cs" />
     <Compile Include="Controllers\SCOMAgentController.cs" />
+    <Compile Include="Controllers\SCOMPerfController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
