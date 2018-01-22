@@ -113,13 +113,10 @@ namespace SCOM_API.Controllers
                         SqlDataAdapter da = new SqlDataAdapter(sqlCmd);
                         da.Fill(dataTable);
 
-                        string jsonString = string.Empty;
-                        jsonString = JsonConvert.SerializeObject(dataTable, Formatting.Indented);
-
-                        // Close connections and reurn data
+                        // Close connections and reurn dataTable
                         da.Dispose();
                         DWConnection.Close();
-                        return Ok(jsonString);
+                        return Ok(dataTable);
                     }
 
                     catch (Exception Ex)
@@ -212,13 +209,10 @@ namespace SCOM_API.Controllers
                         SqlDataAdapter da = new SqlDataAdapter(sqlCmd);
                         da.Fill(dataTable);
 
-                        string jsonString = string.Empty;
-                        jsonString = JsonConvert.SerializeObject(dataTable, Formatting.Indented);
-
-                        // Close connections and reurn data
+                        // Close connections and reurn dataTable
                         da.Dispose();
                         DWConnection.Close();
-                        return Ok(jsonString);
+                        return Ok(dataTable);
                     }
 
                     catch (Exception Ex)
@@ -315,13 +309,10 @@ namespace SCOM_API.Controllers
                         SqlDataAdapter da = new SqlDataAdapter(sqlCmd);
                         da.Fill(dataTable);
 
-                        string jsonString = string.Empty;
-                        jsonString = JsonConvert.SerializeObject(dataTable, Formatting.Indented);
-
-                        // Close connections and reurn data
+                        // Close connections and reurn dataTable
                         da.Dispose();
                         DWConnection.Close();
-                        return Ok(jsonString);
+                        return Ok(dataTable);
                     }
 
                     catch (Exception Ex)
