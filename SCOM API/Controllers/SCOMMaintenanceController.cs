@@ -16,6 +16,7 @@ using SCOM_API.Models;
 using System.Configuration;
 using System.Web.Http.Description;
 using Microsoft.EnterpriseManagement.Monitoring.MaintenanceSchedule;
+using Swashbuckle.Swagger.Annotations;
 
 namespace SCOM_API.Controllers
 {
@@ -59,7 +60,7 @@ namespace SCOM_API.Controllers
 
             List<SCOMComputerMaintenanceModel> MaintenanceComputers = new List<SCOMComputerMaintenanceModel>();
 
-            ///travers trough all classes to get monitoring objects
+            //travers trough all classes to get monitoring objects
             foreach (ManagementPackClass monClass in monClasses)
             {
                 monObjects.AddRange(mg.EntityObjects.GetObjectReader<MonitoringObject>(criteria, ObjectQueryOptions.Default));
@@ -108,8 +109,6 @@ namespace SCOM_API.Controllers
             return Json(MaintenanceComputers);
 
         }
-
-
 
 
 
@@ -191,13 +190,91 @@ namespace SCOM_API.Controllers
         }
 
         /// <summary>
+        /// Updates or ends existing maintenance mode for object.
+        /// </summary>
+        /// <param name="Data">Json string with object id and new endTime</param>
+        /// <param name="EndNow">If true, maintenance will end</param>
+        /// <example>
+        /// {
+        ///     "id": "Guid",
+        ///     "EndTime": "2017-07-07T19:00:00.000Z"
+        /// }
+        /// </example>
+        /// <response code="200">Successfully updated maintenance mode</response>
+        /// <response code="400">Bad request. Check json input</response>
+        /// <response code="304">Object not in maintenance. Nothing to update</response>
+
+        [HttpPut]
+        [SwaggerResponse(HttpStatusCode.OK, "Object maintenance mode updated")]
+        [ResponseType(typeof(HttpResponseMessage))]
+        [Route("API/ObjectMaintenance")]
+        public IHttpActionResult UpdateObjectMaintenance(SCOMUpdateObjectMaintenanceModel Data, bool EndNow = false)
+        {
+            //Validate input
+            if (ModelState.IsValid)
+            {
+                //create a Guid from the json input
+                var ObjectId = new Guid(Data.id);
+                //get the monitoring object by Guid
+                var monObject = mg.EntityObjects.GetObject<MonitoringObject>(ObjectId, ObjectQueryOptions.Default);
+
+                //If object not in maintenance not modified
+                if (!monObject.InMaintenanceMode)
+                {
+                    {
+                        HttpResponseMessage res = new HttpResponseMessage(HttpStatusCode.NotModified);
+                        res.Content = new StringContent("Specified object not in maintenance mode. Nothing to update...");
+                        throw new HttpResponseException(res);
+                    }
+                }
+
+                //If object in maintenanance update
+                else
+                {
+                    //If endNow parameter validate true. End maintenance mode
+                    if (EndNow.Equals(true))
+                    {
+                        monObject.StopMaintenanceMode(DateTime.UtcNow, TraversalDepth.Recursive);
+
+                    }
+
+                    // Get the maintenance window
+                    MaintenanceWindow MaintenanceWindow = monObject.GetMaintenanceWindow();
+
+                    //If user specifies an end date
+                    if (Data.EndTime > DateTime.MinValue)
+                    {
+
+                        //Compare specified end time with current maintenance end time
+                        int TimeCompare = DateTime.Compare(Data.EndTime, MaintenanceWindow.ScheduledEndTime);
+                        //Update end time but use same reason and comment
+                        monObject.UpdateMaintenanceMode(Data.EndTime, MaintenanceWindow.Reason, MaintenanceWindow.Comments);
+                    }
+
+                }
+                // creating OK response
+                return Ok(new { message = "Updated maintenance mode", monitoringObjectId = Data.id });
+
+            }
+
+            // throw error message
+            else
+            {
+                HttpResponseMessage res = new HttpResponseMessage(HttpStatusCode.BadRequest);
+                res.Content = new StringContent("Please check request body");
+                throw new HttpResponseException(res);
+            }
+        }
+
+
+        /// <summary>
         /// Creates a new maintenance schedule with the specified monitoring objects.
         /// </summary>
-        /// <param name="Data">Json string scheduleName, object ids, StartTime, EndTime, comment</param>
+        /// <param name="Data">scheduleName, object ids, StartTime, EndTime, comment are mandatory</param>
         /// <example>
         /// {
         ///     "scheduleName": "string",
-        ///     "id": "[monitoringObjectId]",
+        ///     "id": "[monitoringObjectId's]",
         ///     "StartTime": "2017-05-22T07:01:00.374Z",
         ///     "EndTime": "2017-05-22T08:01:00.374Z",
         ///     "comment": "doing maintenance"
@@ -233,7 +310,6 @@ namespace SCOM_API.Controllers
 
                 ObjectList.Add(item);
             }
-            //
 
             //create a recurrencePattern this is 'sourced' from OmCommands.10.dll ( new-scommaintenanceSchedule CMDLET )
             //read more: https://docs.microsoft.com/en-us/powershell/systemcenter/systemcenter2016/operationsmanager/vlatest/new-scommaintenanceschedule
@@ -263,10 +339,11 @@ namespace SCOM_API.Controllers
             var shed = MaintenanceSchedule.GetMaintenanceScheduleById(guid, mg);
             List<SCOMObjectSchedMaintenanceModel> MaintenanceScheduleList = new List<SCOMObjectSchedMaintenanceModel>();
             SCOMObjectSchedMaintenanceModel mSched = new SCOMObjectSchedMaintenanceModel();
+            mSched.scheduleId = guid;
+            mSched.scheduleName = shed.ScheduleName;
             mSched.id = array;
             mSched.StartTime = shed.ActiveStartTime;
             mSched.EndTime = shed.ScheduledEndTime;
-            mSched.scheduleName = shed.ScheduleName;
             mSched.comment = shed.Comments;
 
             MaintenanceScheduleList.Add(mSched);
@@ -275,6 +352,7 @@ namespace SCOM_API.Controllers
 
 
         }
+
 
     }
 }//END

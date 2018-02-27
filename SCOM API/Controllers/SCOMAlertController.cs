@@ -160,9 +160,10 @@ namespace SCOM_API.Controllers
         /// For more information please see technet documentation "http://bit.ly/2zblZLh"</param>
         /// <param name="Id">Specify alert guid you want to update</param>
         [HttpPut]
-        [ResponseType(typeof(IEnumerable<MonitoringAlert>))]
+        [ResponseType(typeof(HttpResponseMessage))]
         [Route("Alerts/{Id:Guid}")]
-        public IList<MonitoringAlert> UpdateAlertById([FromUri()]Guid Id, [FromBody()] SCOMAlertUpdateModel Properties)
+        //public IList<MonitoringAlert> UpdateAlertById([FromUri()]Guid Id, [FromBody()] SCOMAlertUpdateModel Properties)
+        public IHttpActionResult UpdateAlertById([FromUri()]Guid Id, [FromBody()] SCOMAlertUpdateModel Properties)
         {
             if (Id == Guid.Empty)
             {
@@ -246,7 +247,8 @@ namespace SCOM_API.Controllers
                 }
 
             }
-            return alerts;
+            // creating OK response
+            return Ok(new { message = "Alert updated", alertId = Id.ToString() });
 
         }
 
