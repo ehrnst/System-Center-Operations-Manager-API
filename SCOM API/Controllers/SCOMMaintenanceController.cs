@@ -8,7 +8,6 @@ using Microsoft.EnterpriseManagement;
 using Microsoft.EnterpriseManagement.Common;
 using Microsoft.EnterpriseManagement.Monitoring;
 using System.Web;
-using Microsoft.SystemCenter.OperationsManagerV10.Commands;
 using Microsoft.EnterpriseManagement.Configuration;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
